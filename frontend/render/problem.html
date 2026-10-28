@@ -1,0 +1,19 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <title>ELVARA · Problem film render</title>
+    <link href="https://api.fontshare.com/v2/css?f[]=zodiak@300,301,400&f[]=author@400,500&display=block" rel="stylesheet" />
+    <style>
+      html, body { margin: 0; background: #000; color: #f3ebd6; font: 13px/1.4 system-ui; }
+      #out { display: block; width: 100%; height: auto; }
+      #gl { position: absolute; left: -99999px; }
+      #status { position: fixed; left: 8px; bottom: 8px; background: rgba(0,0,0,.6); padding: 4px 8px; }
+    </style>
+  </head>
+  <body>
+    <canvas id="out"></canvas>
+    <div id="status">loading…</div>
+    <script type="module" src="./problem.js"></script>
+  </body>
+</html>
