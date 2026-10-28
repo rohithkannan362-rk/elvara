@@ -184,3 +184,21 @@
 }
 .chrome.is-scrolled::before { opacity: 1; }
 .chrome.is-menu::before { opacity: 0; }
+
+/* Nav bar polish: a slow gold light travels round the rim; the current
+   page carries a small gold dot. */
+@property --rim { syntax: '<angle>'; inherits: false; initial-value: 0deg; }
+.nav::before {
+  content: ''; position: absolute; inset: 0; border-radius: inherit; padding: 1px; pointer-events: none;
+  background: conic-gradient(from var(--rim), transparent 0deg, rgba(232, 215, 174, 0.85) 40deg, transparent 90deg, transparent 360deg);
+  -webkit-mask: linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0); -webkit-mask-composite: xor; mask-composite: exclude;
+  animation: rim 7s linear infinite;
+}
+@keyframes rim { to { --rim: 360deg; } }
+.nav__link { padding: 0.7rem 1.1rem; font-size: 0.72rem; }
+.nav__link.is-current::after {
+  content: ''; position: absolute; left: 50%; bottom: 4px; width: 4px; height: 4px; margin-left: -2px; border-radius: 50%;
+  background: #e8d7ae; box-shadow: 0 0 8px rgba(232, 215, 174, 0.9);
+}
+@media (prefers-reduced-motion: reduce) { .nav::before { animation: none; } }
+@media (max-width: 1300px) { .nav__link { padding-inline: 0.8rem; } }
