@@ -31,6 +31,7 @@ visitors can scroll or drag to turn a product.
 - `src/components/LivingFilm.jsx` — the interactive 3D film on Home (drag to turn, touch to ripple, freshness slider). It renders only while on screen.
 - `src/components/Fx.jsx` — cursor spore trail, magnetic buttons and the scroll-speed lean (`--skew`). All three switch off for reduced-motion and touch.
 - Chapter covers drift with the pointer for depth (`ChapterPage` in `Pages.jsx`).
+- `src/components/Carousel3D.jsx` — the 12 products on a 3D ring at the top of the Collection: drag to spin, series buttons, click the front product to open it.
 
 ## Where things live
 - `src/data/content.js` — every word on the site, palette, atmospheres, product ↔ video mapping, founders.

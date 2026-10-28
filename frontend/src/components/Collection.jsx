@@ -2,6 +2,7 @@ import { useEffect, useRef } from 'react';
 import { gsap } from '../lib/scroll';
 import { CATEGORIES, BRAND } from '../data/content';
 import { Words, Chars } from '../lib/Split';
+import Carousel3D from './Carousel3D';
 
 // Pointer tilt + moving sheen on a product object.
 function useTilt() {
@@ -11,12 +12,12 @@ function useTilt() {
       const r = el.getBoundingClientRect();
       const x = (e.clientX - r.left) / r.width - 0.5;
       const y = (e.clientY - r.top) / r.height - 0.5;
-      gsap.to(el.querySelector('.object__body'), { rotateY: x * 14, rotateX: -y * 12, duration: 0.8, ease: 'power3.out' });
+      gsap.to(el.querySelector('.object__body'), { rotateY: x * 22, rotateX: -y * 18, scale: 1.04, y: -14, transformPerspective: 1100, duration: 0.8, ease: 'power3.out' });
       el.style.setProperty('--sx', `${(x + 0.5) * 100}%`);
       el.style.setProperty('--sy', `${(y + 0.5) * 100}%`);
     },
     onPointerLeave: (e) => {
-      gsap.to(e.currentTarget.querySelector('.object__body'), { rotateY: 0, rotateX: 0, duration: 1.2, ease: 'elastic.out(1, 0.5)' });
+      gsap.to(e.currentTarget.querySelector('.object__body'), { rotateY: 0, rotateX: 0, scale: 1, y: 0, duration: 1.4, ease: 'elastic.out(1, 0.45)' });
     },
   };
 }
@@ -95,6 +96,10 @@ export default function Collection({ ready, onOpen }) {
         <h2 className="display-xl"><Chars text="Three series." /><br /><em><Chars text="One material." /></em></h2>
         <p className="collection__motto wordmark">{BRAND.motto}</p>
         <p className="collection__sub lede">Twelve products in three series. Choose one to inspect it — scroll to open it, turn it and move in close enough to see the fibres.</p>
+      </div>
+
+      <div className="ring-wrap" data-atmo="cream">
+        <Carousel3D ready={ready} onOpen={onOpen} />
       </div>
 
       {CATEGORIES.map((c) => (
