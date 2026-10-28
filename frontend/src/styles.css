@@ -84,7 +84,7 @@ em { font-style: italic; color: var(--hi); }
 .tnum { font-variant-numeric: lining-nums proportional-nums; }
 /* Display figures: one engraved treatment for every large number on the site. */
 .stat__num, .ask__amount, .sdg__n, .ret b, .headline__item b, .spec__v, .market__row b, .road__item b, .proto__n,
-.ip__card .tnum, .tier__v, .ratios b, .indicator__read dd, .loop__num, .founder__index, .india__fact b, .stream__v,
+.ip__card .tnum, .tier__v, .ratios b, .indicator__read dd, .loop__num, .india__fact b, .stream__v,
 .origin__team b, .orbit-label, .num-display {
   font-family: var(--serif); font-weight: 300; letter-spacing: -0.03em; font-variant-numeric: lining-nums proportional-nums;
 }
@@ -667,7 +667,6 @@ main { position: relative; z-index: 1; }
 .founder__photo img { display: block; width: 100%; height: 115%; object-fit: cover; transition: filter 1.2s var(--ease); }
 .founder:hover .founder__photo img { filter: grayscale(0) contrast(1.06) saturate(1.05) !important; }
 .founder__shade { position: absolute; inset: 0; pointer-events: none; background: linear-gradient(180deg, rgba(2, 10, 7, 0) 55%, rgba(2, 10, 7, 0.55) 100%), radial-gradient(120% 80% at 50% 0%, rgba(232, 215, 174, 0.12), transparent 60%); }
-.founder__index { position: absolute; left: 1.4rem; bottom: 1.2rem; font: 300 2.6rem/1 var(--serif); color: rgba(243, 235, 214, 0.85); }
 .founder__text { display: grid; gap: 0.7rem; padding-inline: 14px; }
 .founder__text .eyebrow { margin: 0; color: var(--hi); }
 .founder__text .eyebrow .wordmark { letter-spacing: 0.22em; color: var(--fg); }

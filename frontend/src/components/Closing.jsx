@@ -157,7 +157,6 @@ export function Founders({ ready }) {
                   <img src={f.img} alt={`${f.name}, ${f.role} of ELVARA`} style={{ objectPosition: f.focus }} />
                 </div>
                 <span className="founder__shade" aria-hidden="true" />
-                <span className="founder__index tnum" aria-hidden="true">0{i + 1}</span>
               </div>
             </div>
             <figcaption className="founder__text">
