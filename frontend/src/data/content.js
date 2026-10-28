@@ -295,11 +295,11 @@ export const MARKET = [
 ];
 
 export const ROADMAP = [
-  { y: '2026', t: 'Pilot line scale-up, FSSAI certification, first anchor customers' },
-  { y: '2027', t: 'Fruit & vegetable and meat & fish segments' },
-  { y: '2028', t: '3× capacity, national distributor network' },
-  { y: '2029', t: 'Category leadership in India, licensing in Southeast Asia' },
-  { y: '2030', t: 'International market entry' },
+  { y: '2026', t: 'Pilot line scale-up, FSSAI certification, first 5 anchor customers' },
+  { y: '2027', t: 'Seed round close, break-even trajectory, fruit & vegetable and meat & fish segment entry' },
+  { y: '2028', t: 'Series A raise, 3× capacity expansion, national distributor network' },
+  { y: '2029', t: 'Category leadership in India, licensing partner in Southeast Asia' },
+  { y: '2030', t: 'Series B / strategic partnership evaluation, international market entry' },
 ];
 
 export const FOUNDERS = [
@@ -345,7 +345,7 @@ export const MISSION = [
 
 export const STORY = [
   { k: 'The waste stream', t: 'Tamil Nadu discards over 4 lakh tonnes of fruit peel and agro-lignin residue every year — a cellulose- and lignin-rich resource with nowhere to go.' },
-  { k: 'The lab bench', t: 'Early trials on cellulose-composite biofilms matched commercial PLA on tensile strength, while degrading in a home compost bin in under 90 days.' },
+  { k: 'The lab bench', t: 'Early lab trials on cellulose-composite biofilms (CSIR-CLRI research track) matched commercial PLA on tensile strength, while degrading in a home compost bin in under 90 days.' },
   { k: 'The second insight', t: 'A conversation with a dairy co-operative about spoilage-driven returns: packaging that only protects food is not enough — it should tell you when food has stopped being safe.' },
   { k: 'ELVARA', t: 'Founded to combine both innovations in one product: a compostable film with an integrated, natural freshness indicator.' },
 ];
@@ -412,7 +412,7 @@ export const REVENUE_STREAMS = [
   { v: '~78%', t: 'Direct film sales', d: 'Per-kg roll-stock film to converters and brand owners' },
   { v: '~15%', t: 'Licensing & contract manufacturing', d: 'Formulation and process licensed to regional converters' },
   { v: '+18%', t: 'Premium indicator tier', d: 'Freshness-indicator lamination lifts blended price' },
-  { v: 'Grants', t: 'Non-dilutive funding', d: 'BIRAC BIG, MSME Innovation and state green-tech grants' },
+  { v: 'Grants', t: 'Non-dilutive funding', d: 'BIRAC BIG, MSME Innovation and state green-tech grants — non-recurring, but they cut cash burn in Years 1–2' },
 ];
 
 export const CHANNELS = [
@@ -679,4 +679,76 @@ export const VALUATION = [
   { k: 'Post-money valuation', v: '₹7.5 Cr' },
   { k: 'Seed investors’ ownership', v: '20%' },
   { k: 'ESOP pool', v: '5–8%' },
+];
+
+
+/* ───────── Pitch-deck additions ───────── */
+
+// Executive summary, as the deck opens.
+export const EXEC_SUMMARY = [
+  'ELVARA designs and manufactures a 100% biodegradable packaging film made from lignin nanoparticles and natural biopolymers, engineered with a built-in freshness indicator that visually signals spoilage in food packaging.',
+  'We target the ₹28,000+ Cr Indian food & FMCG packaging industry, where single-use plastic bans and rising consumer demand for sustainable packaging are creating urgent, unmet demand for compostable, high-barrier alternatives.',
+  'We are raising ₹1.5 Crore in seed capital to scale pilot production, complete food-safety certification, and secure our first five anchor customers across dairy, bakery and fresh produce.',
+];
+
+// The global picture behind the problem.
+export const PLASTIC_PRODUCTION = { unit: 'Million tonnes', years: ['1990', '2000', '2010', '2020', '2024', '2030E'], v: [120, 213, 297, 367, 413, 550] };
+export const GLOBAL_FACTS = [
+  { v: '9%', l: 'of all plastic ever produced has been recycled globally' },
+  { v: '~40%', l: 'Food & beverage packaging is the single largest end use of plastic' },
+  { v: '2050', l: 'Ocean plastic is projected to outweigh fish', source: 'Ellen MacArthur Foundation' },
+  { v: '<120 µm', l: 'Single-use plastics below 120 microns are banned in India' },
+];
+export const CONNECTION = 'Plastic packaging pollutes after use, but it also fails to prevent spoilage before use — consumers cannot tell whether food is still safe until it is visibly rotten, driving both premature disposal and food-borne illness. ELVARA addresses both ends of the same failure: the film itself is compostable, and it visually communicates freshness, so food is used while it is still good and discarded only when it truly should be.';
+
+// One film, two jobs.
+export const SOLUTION_POINTS = [
+  { k: 'Strength', d: 'A lignin-nanoparticle-reinforced biopolymer film that matches or exceeds the mechanical performance of conventional plastic wrap.' },
+  { k: 'Compostability', d: 'Fully home-compostable within 90 days, made primarily from valorised agricultural and lignocellulosic waste streams.' },
+  { k: 'Freshness signal', d: 'An embedded natural pH / anthocyanin-responsive indicator that changes colour as spoilage volatiles accumulate — visible to the consumer or retailer without any device.' },
+  { k: 'Manufacturability', d: 'Made on standard film-extrusion and casting lines with minor retrofitting, enabling contract manufacturing at scale within 18 months.' },
+];
+
+// How the market was sized.
+export const MARKET_LOGIC = [
+  { k: 'TAM', v: '₹28,000 Cr', d: 'Total Indian food & FMCG flexible packaging spend (industry reports, 2026).' },
+  { k: 'SAM', v: '₹3,200 Cr', d: '11.4% of TAM — addressable by compostable / bio-based film given regulatory mandates.' },
+  { k: 'SOM', v: '₹95 Cr', d: '3% of SAM, based on planned Year-5 production capacity of ~1,900 tonnes a year.' },
+];
+export const GLOBAL_MARKET = { unit: 'USD billion', years: ['2024', '2025', '2026', '2027', '2028', '2029', '2030'], v: [412, 448, 492, 542, 599, 663, 735] };
+
+// ₹ Lakhs.
+export const CASH_FLOW = {
+  years: ['Year 1', 'Year 2', 'Year 3', 'Year 4', 'Year 5'],
+  operating: [-30, 22, 145, 360, 725],
+  cumulative: [140, 162, 307, 667, 1392],
+};
+export const BREAK_EVEN = {
+  quarters: ['Q1', 'Q2', 'Q3', 'Q4', 'Q5', 'Q6', 'Q7', 'Q8'],
+  revenue: [15, 28, 45, 65, 92, 128, 172, 225],
+  cost: [58, 62, 68, 75, 85, 98, 112, 128],
+};
+export const RETURN_ASSUMPTIONS = [
+  'IRR and NPV computed on cumulative net cash flows across Years 1–5, against the ₹170 L initial investment plan plus the ₹1.5 Cr seed round.',
+  'A 15% discount rate reflects the early-stage deep-tech risk premium typical of Indian seed-stage biomaterials ventures.',
+  'The ROI multiple reflects cumulative net profit plus terminal equity value, relative to total capital invested through Year 5.',
+];
+
+// Ownership once this round closes, %.
+export const OWNERSHIP_NOW = [
+  { k: 'Founders', v: 75, d: 'Split 60% / 15% between the co-founders' },
+  { k: 'Angel investors', v: 10 },
+  { k: 'Seed VC', v: 10 },
+  { k: 'ESOP pool', v: 5 },
+];
+
+// Investor terms, explained with this round's numbers.
+export const GLOSSARY = [
+  { k: 'Equity', d: 'Ownership stake in the company, represented by shares. 1% equity in a ₹5 Cr company = ₹5 lakh notional value.' },
+  { k: 'Pre-money valuation', d: 'The company’s agreed value before new investment — ₹6 Cr for this seed round.' },
+  { k: 'Post-money valuation', d: 'Pre-money plus new investment: ₹6 Cr + ₹1.5 Cr raised = ₹7.5 Cr.' },
+  { k: 'Investor ownership', d: 'New investment ÷ post-money valuation: ₹1.5 Cr ÷ ₹7.5 Cr = 20% for this round’s investors.' },
+  { k: 'ESOP pool', d: 'Shares reserved for employees as compensation and retention — typically 5–10%, set aside before new investor shares are issued.' },
+  { k: 'Market capitalisation', d: 'Share price × total shares outstanding — relevant only once a company is listed.' },
+  { k: 'Lock-in period', d: 'Mandatory holding period (often one year) before promoters and early investors can sell shares after listing.' },
 ];

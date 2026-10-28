@@ -2,18 +2,21 @@ import { useEffect, useRef, useState } from 'react';
 import { gsap, ScrollTrigger, scrollToId } from '../lib/scroll';
 import { go } from '../lib/router';
 import { CHAPTERS, chapterById, CONTACT, PAGES, TICKER } from '../data/sitemap';
-import { BRAND, ASK, RETURNS, FINANCE, MARKET, GLANCE, FUNDING_PATH, TECH, PROTOTYPE_RESULT } from '../data/content';
+import { BRAND, ASK, RETURNS, FINANCE, MARKET, GLANCE, FUNDING_PATH, TECH, PROTOTYPE_RESULT, EXEC_SUMMARY } from '../data/content';
 import { Words } from '../lib/Split';
 import { Problem, Need, Solution, Material } from './Story';
 import Collection from './Collection';
 import { Applications, Potential, Founders, Enquire } from './Closing';
 import { Vision, Technology, Impact, Operations, Business, Investment, Origin } from './Deck';
 import { Strategy } from './Deck2';
+import { GlobalPicture, HowItWorks, MarketSizing, CashFlow, Ownership } from './Extras';
 
 // Which section component furnishes each section id in the site map.
 const SECTION_VIEWS = {
   crisis: (p) => <Need {...p} />,
+  global: (p) => <GlobalPicture {...p} />,
   answer: (p) => <Solution {...p} />,
+  how: (p) => <HowItWorks {...p} />,
   vision: (p) => <Vision {...p} />,
   origin: (p) => <Origin {...p} />,
   founders: (p) => <Founders {...p} />,
@@ -24,21 +27,24 @@ const SECTION_VIEWS = {
   model: (p) => <Business {...p} part="model" />,
   pricing: (p) => <Business {...p} part="pricing" />,
   market: (p) => <Potential {...p} />,
+  sizing: (p) => <MarketSizing {...p} />,
   strategy: (p) => <Strategy {...p} />,
   sdg: (p) => <Impact {...p} />,
   operations: (p) => <Operations {...p} />,
   ask: (p) => <Investment {...p} part="ask" />,
   financials: (p) => <Investment {...p} part="financials" />,
+  cashflow: (p) => <CashFlow {...p} />,
+  ownership: (p) => <Ownership {...p} />,
   risks: (p) => <Investment {...p} part="risks" />,
 };
 
 // Each divider wears the palette of the section it introduces, so the
 // world has already re-tinted by the time that section arrives.
 const SECTION_ATMO = {
-  crisis: 'night', answer: 'emerald', vision: 'emerald', origin: 'night', founders: 'night',
+  crisis: 'night', global: 'night', answer: 'emerald', how: 'emerald', vision: 'emerald', origin: 'night', founders: 'night',
   material: 'olive', technology: 'night', series: 'cream', applications: 'emerald',
-  model: 'night', pricing: 'night', market: 'olive', strategy: 'olive', sdg: 'olive', operations: 'olive',
-  ask: 'emerald', financials: 'emerald', risks: 'emerald',
+  model: 'night', pricing: 'night', market: 'olive', sizing: 'olive', strategy: 'olive', sdg: 'olive', operations: 'olive',
+  ask: 'emerald', financials: 'emerald', cashflow: 'emerald', ownership: 'emerald', risks: 'emerald',
 };
 
 const rectOf = (el) => el?.getBoundingClientRect?.() ?? null;
@@ -221,6 +227,21 @@ export function Home({ ready }) {
               </div>
             ))}
           </dl>
+        </div>
+
+        <div className="summary wrap">
+          <p className="eyebrow">Executive summary</p>
+          <div className="summary__body">
+            <p className="summary__lead display-sm" data-rise>{EXEC_SUMMARY[0]}</p>
+            <div className="summary__more">
+              {EXEC_SUMMARY.slice(1).map((t) => <p key={t} data-rise>{t}</p>)}
+              <dl className="summary__glance" data-rise>
+                {GLANCE.filter((g) => !['Intellectual property', 'Recognition'].includes(g.k)).map((g) => (
+                  <div key={g.k}><dt>{g.k}</dt><dd>{g.v}</dd></div>
+                ))}
+              </dl>
+            </div>
+          </div>
         </div>
 
         <div className="proof wrap">

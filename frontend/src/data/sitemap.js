@@ -17,7 +17,9 @@ export const CHAPTERS = [
     atmo: 'night',
     subs: [
       { id: 'crisis', img: `${M}/hub/why.jpg`, title: 'The crisis', line: 'Five numbers that define the packaging gap.', points: ['500-year wrappers', '11 M t into oceans', '33% of food wasted'] },
+      { id: 'global', title: 'The global picture', line: 'Plastic production since 1990, and why food packaging sits at the centre of it.', points: ['Production 1990–2030', '9% recycled', 'The connection'] },
       { id: 'answer', img: `${M}/img/premium-container.jpg`, title: 'The answer', line: 'ELVARA, revealed — and how it compares.', points: ['Home compostable', 'Freshness built in', 'Plastic vs paper vs PLA'] },
+      { id: 'how', title: 'One film, two jobs', line: 'Strength, compostability, a freshness signal — made on standard lines.', points: ['Strength', 'Compostability', 'Manufacturability'] },
       { id: 'vision', img: `${M}/img/basic-envelope.jpg`, title: 'Vision & mission', line: 'Where we are going, and the numbers at a glance.', points: ['Vision', 'Mission', 'At a glance'] },
       { id: 'origin', img: `${M}/cofounder.jpg`, title: 'Our story', line: 'From waste-stream question to company.', points: ['Origin', 'Milestones', 'Team plan'] },
       { id: 'founders', img: `${M}/founder.jpg`, title: 'Founders', line: 'The two co-founders behind ELVARA.', points: ['Aafreena Yasmine MK', 'Rithan A R', 'LinkedIn'] },
@@ -54,6 +56,7 @@ export const CHAPTERS = [
       { id: 'model', img: `${M}/img/niche-giftbox.jpg`, title: 'Business model', line: 'Revenue streams, cost curve and channel mix.', points: ['3 revenue engines', 'Cost vs plastic', 'Distribution'] },
       { id: 'pricing', img: `${M}/img/niche-tags.jpg`, title: 'Pricing & go-to-market', line: 'Per-kg B2B pricing, segments and the business canvas.', points: ['B2B pricing', 'Segments', 'Business canvas'] },
       { id: 'market', img: `${M}/img/premium-wrap.jpg`, title: 'Market & roadmap', line: 'A regulatory tailwind meets an unmet need.', points: ['19% CAGR', 'TAM · SAM · SOM', 'Roadmap'] },
+      { id: 'sizing', title: 'Market sizing', line: 'How TAM, SAM and SOM were calculated, and the global market curve.', points: ['TAM · SAM · SOM logic', 'USD 412 → 735 Bn', '19% CAGR'] },
       { id: 'strategy', img: `${M}/img/niche-giftbag.jpg`, title: 'Strategic analysis', line: 'SWOT, PESTLE, Porter and the competitive landscape.', points: ['SWOT', 'PESTLE', "Porter's five forces"] },
       { id: 'sdg', img: `${M}/img/basic-carrybag.jpg`, title: 'UN SDG impact', line: 'Aligned with five Sustainable Development Goals.', points: ['5 SDGs', 'Stakeholder value', 'Agro-waste valorised'] },
       { id: 'operations', img: `${M}/img/basic-pouch.jpg`, title: 'Operations', line: 'Plant layout, quality gates and sourcing.', points: ['Plant zones', 'Quality gates', 'Sourcing'] },
@@ -72,6 +75,8 @@ export const CHAPTERS = [
     subs: [
       { id: 'ask', img: `${M}/img/premium-freshpack.jpg`, title: 'The ask', line: 'The round, use of funds, forecast and returns.', points: ['₹1.5 Cr seed', 'Revenue forecast', 'Funding path'] },
       { id: 'financials', img: `${M}/img/premium-wrap.jpg`, title: 'Financials & cap table', line: 'P&L, balance sheet, sensitivity, ratios and ownership.', points: ['P&L', 'Balance sheet', 'Cap table'] },
+      { id: 'cashflow', title: 'Cash flow & break-even', line: 'Operating cash, cumulative cash, quarterly break-even and the return assumptions.', points: ['Cash flow', 'Break-even', 'Assumptions'] },
+      { id: 'ownership', title: 'Ownership & terms', line: 'Ownership after this round, and every investor term explained.', points: ['Cap table', 'Valuation', 'Glossary'] },
       { id: 'risks', img: `${M}/img/premium-pharma.jpg`, title: 'Risks & exits', line: 'Risks anticipated, and pathways to liquidity.', points: ['Risk register', 'Mitigation', 'Exit routes'] },
     ],
   },

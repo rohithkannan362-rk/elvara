@@ -1,7 +1,7 @@
 import { useEffect, useRef, useState } from 'react';
-import { gsap, ScrollTrigger } from '../lib/scroll';
+import { gsap, ScrollTrigger, scrollToId } from '../lib/scroll';
 import { BRAND } from '../data/content';
-import { chapterById, CONTACT } from '../data/sitemap';
+import { chapterById, CONTACT, CHAPTERS } from '../data/sitemap';
 import { go } from '../lib/router';
 import { isOn, onChange as onSoundChange, toggle as toggleSound } from '../lib/sound';
 
@@ -41,6 +41,7 @@ export function Chrome({ ready, route, menuOpen, onMenu }) {
           <span className="medallion medallion--sm"><img src={BRAND.logo} alt="" /></span>
           <span className="wordmark">ELVARA</span>
         </a>
+        <NavBar route={route} />
         <span className="chrome__chapter" aria-live="polite">
           {page ? (
             <>
@@ -63,6 +64,90 @@ export function Chrome({ ready, route, menuOpen, onMenu }) {
         </div>
       </header>
     </>
+  );
+}
+
+// Primary navigation: the five pages in a glass pill. A highlight glides to
+// whichever link is pointed at; each chapter opens a panel of its sections.
+function NavBar({ route }) {
+  const root = useRef();
+  const glow = useRef();
+  const [open, setOpen] = useState(null);
+  const links = [...CHAPTERS, CONTACT];
+  const timer = useRef();
+
+  const moveGlow = (el) => {
+    const g = glow.current;
+    if (!g) return;
+    if (!el) return gsap.to(g, { opacity: 0, duration: 0.3 });
+    const r = el.getBoundingClientRect();
+    const p = root.current.getBoundingClientRect();
+    gsap.to(g, { x: r.left - p.left, width: r.width, opacity: 1, duration: 0.55, ease: 'expo.out' });
+  };
+  const current = () => root.current?.querySelector('.nav__link.is-current');
+  useEffect(() => {
+    // Rest the highlight on the current page once fonts have laid out.
+    setOpen(null);
+    const id = setTimeout(() => moveGlow(current()), 120);
+    return () => clearTimeout(id);
+  }, [route.chapter]);
+
+  const enter = (c) => (e) => {
+    clearTimeout(timer.current);
+    moveGlow(e.currentTarget.querySelector('.nav__link'));
+    setOpen(c.subs ? c.id : null);
+  };
+  const leave = () => {
+    timer.current = setTimeout(() => {
+      setOpen(null);
+      moveGlow(current());
+    }, 180);
+  };
+  const toPage = (c) => (e) => {
+    e.preventDefault();
+    setOpen(null);
+    go(`/${c.id}`, e.currentTarget.getBoundingClientRect(), c.title);
+  };
+  const toSection = (c, s) => (e) => {
+    e.preventDefault();
+    setOpen(null);
+    if (route.chapter === c.id) scrollToId(`sec-${s.id}`);
+    else go(`/${c.id}/${s.id}`, null, s.title);
+  };
+
+  return (
+    <nav className="nav" ref={root} aria-label="Pages" onMouseLeave={leave}>
+      <span className="nav__glow" ref={glow} aria-hidden="true" />
+      {links.map((c) => (
+        <div key={c.id} className={`nav__item ${open === c.id ? 'is-open' : ''}`} onMouseEnter={enter(c)} onFocus={enter(c)}>
+          <a href={`#/${c.id}`} className={`nav__link ${route.chapter === c.id ? 'is-current' : ''}`} onClick={toPage(c)} aria-current={route.chapter === c.id ? 'page' : undefined} data-cursor="hover">
+            <span className="tnum">{c.no}</span>{c.short === 'Product' ? 'Product & Tech' : c.title}
+            {c.subs && <i aria-hidden="true">▾</i>}
+          </a>
+          {c.subs && (
+            <div className="nav__panel" role="group" aria-label={`On ${c.title}`}>
+              <div className="nav__intro">
+                <img src={c.img} alt="" />
+                <p className="eyebrow">{c.kicker}</p>
+                <p>{c.line}</p>
+                <a className="nav__all" href={`#/${c.id}`} onClick={toPage(c)} data-cursor="hover">Open {c.title} <span aria-hidden="true">→</span></a>
+              </div>
+              <ol className="nav__secs">
+                {c.subs.map((s, i) => (
+                  <li key={s.id}>
+                    <a href={`#/${c.id}/${s.id}`} onClick={toSection(c, s)} data-cursor="hover">
+                      <span className="tnum">{String(i + 1).padStart(2, '0')}</span>
+                      <b>{s.title}</b>
+                      <small>{s.line}</small>
+                    </a>
+                  </li>
+                ))}
+              </ol>
+            </div>
+          )}
+        </div>
+      ))}
+    </nav>
   );
 }
 

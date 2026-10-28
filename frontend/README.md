@@ -13,17 +13,17 @@ Six pages (hash routes, `src/lib/router.js`):
 
 | Page | Address | What's on it |
 |---|---|---|
-| Home | `#/` | Entrance film → problem film → investor snapshot → doors to every page |
-| 01 Our Story | `#/story` | The crisis · The answer · Vision & mission · Our story · Founders |
+| Home | `#/` | Entrance film → problem film → investor snapshot → executive summary → proof points → doors to every page |
+| 01 Our Story | `#/story` | The crisis · The global picture · The answer · One film, two jobs · Vision & mission · Our story · Founders |
 | 02 Product & Technology | `#/product` | Living film · Technology & IP · Three series (12 products) · Applications |
-| 03 Business | `#/business` | Business model · Pricing & GTM · Market & roadmap · Strategy · UN SDG impact · Operations |
-| 04 Investment | `#/invest` | The ask · Financials & cap table · Risks & exits |
+| 03 Business | `#/business` | Business model · Pricing & GTM · Market & roadmap · Market sizing · Strategy · UN SDG impact · Operations |
+| 04 Investment | `#/invest` | The ask · Financials & cap table · Cash flow & break-even · Ownership & terms · Risks & exits |
 | 05 Contact | `#/contact` | The enquiry form |
 
 Each chapter page opens with a cover and an "On this page" list, then stacks its sections, each under a numbered
 divider; a side index tracks the current section. `#/story/founders` opens a page at a section.
 Pages and sections live in `src/data/sitemap.js`; `SECTION_VIEWS` in `src/components/Pages.jsx` says which
-component renders each section. The header **Menu** lists the six pages and their sections; the floating dock
+component renders each section. The header carries a glass **navigation bar** (five pages; hovering one opens a panel of its sections) on desktop. The **Menu** lists the six pages and their sections; the floating dock
 (and ← / → keys) turns pages; every page change plays the curtain in `Transition.jsx`. In the product view,
 visitors can scroll or drag to turn a product.
 
