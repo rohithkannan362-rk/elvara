@@ -4,6 +4,7 @@ import Loader from './components/Loader';
 import { Chrome, Cursor } from './components/Chrome';
 import Menu from './components/Menu';
 import Transition from './components/Transition';
+import Fx from './components/Fx';
 import { Home, ChapterPage, ContactPage } from './components/Pages';
 import ProductExperience from './components/ProductExperience';
 import { initScroll, getLenis, scrollToId, ScrollTrigger } from './lib/scroll';
@@ -108,6 +109,7 @@ export default function App() {
         {page}
       </main>
       <Transition />
+      <Fx />
       {open && (
         <ProductExperience
           key="px"

@@ -27,6 +27,11 @@ component renders each section. The header carries a glass **navigation bar** (f
 (and ← / → keys) turns pages; every page change plays the curtain in `Transition.jsx`. In the product view,
 visitors can scroll or drag to turn a product.
 
+## Experience layer
+- `src/components/LivingFilm.jsx` — the interactive 3D film on Home (drag to turn, touch to ripple, freshness slider). It renders only while on screen.
+- `src/components/Fx.jsx` — cursor spore trail, magnetic buttons and the scroll-speed lean (`--skew`). All three switch off for reduced-motion and touch.
+- Chapter covers drift with the pointer for depth (`ChapterPage` in `Pages.jsx`).
+
 ## Where things live
 - `src/data/content.js` — every word on the site, palette, atmospheres, product ↔ video mapping, founders.
 - `src/components/ProductExperience.jsx` — the scroll-scrubbed product room (0 / 15 / 35 / 65 / 85 / 100 % stages).

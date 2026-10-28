@@ -10,6 +10,7 @@ import { Applications, Potential, Founders, Enquire } from './Closing';
 import { Vision, Technology, Impact, Operations, Business, Investment, Origin } from './Deck';
 import { Strategy } from './Deck2';
 import { GlobalPicture, HowItWorks, MarketSizing, CashFlow, Ownership } from './Extras';
+import LivingFilm from './LivingFilm';
 
 // Which section component furnishes each section id in the site map.
 const SECTION_VIEWS = {
@@ -229,6 +230,8 @@ export function Home({ ready }) {
           </dl>
         </div>
 
+        <LivingFilm ready={ready} />
+
         <div className="summary wrap">
           <p className="eyebrow">Executive summary</p>
           <div className="summary__body">
@@ -299,11 +302,22 @@ export function ChapterPage({ ready, chapterId, onOpen, interest }) {
 
   useEffect(() => {
     if (!ready) return;
+    let depth;
     const ctx = gsap.context(() => {
       gsap.fromTo('.cover__media img', { scale: 1.25 }, { scale: 1, duration: 3, ease: 'expo.out' });
       gsap.to('.cover__media', { yPercent: 18, ease: 'none', scrollTrigger: { trigger: '.cover', start: 'top top', end: 'bottom top', scrub: true } });
       gsap.to('.cover__ghost', { xPercent: -14, ease: 'none', scrollTrigger: { trigger: '.cover', start: 'top top', end: 'bottom top', scrub: true } });
       gsap.from('.cover__meta > *, .cover__toc li', { opacity: 0, y: 24, stagger: 0.06, duration: 1.2, ease: 'expo.out', delay: 0.3 });
+      // Depth: the photo, the ghost word and the title drift apart with the pointer.
+      const layers = [['.cover__media img', 26], ['.cover__ghost', -40], ['.cover h1', 10]].map(([sel, d]) => ({
+        d, x: gsap.quickTo(sel, 'x', { duration: 1.4, ease: 'power3.out' }), y: gsap.quickTo(sel, 'y', { duration: 1.4, ease: 'power3.out' }),
+      }));
+      depth = (e) => {
+        const mx = e.clientX / innerWidth - 0.5;
+        const my = e.clientY / innerHeight - 0.5;
+        layers.forEach((l) => { l.x(-mx * l.d); l.y(-my * l.d * 0.6); });
+      };
+      addEventListener('pointermove', depth, { passive: true });
       // Section markers draw their rule and number in as they arrive.
       gsap.utils.toArray('.secmark').forEach((m) =>
         gsap.timeline({ scrollTrigger: { trigger: m, start: 'top 85%' } })
@@ -326,6 +340,7 @@ export function ChapterPage({ ready, chapterId, onOpen, interest }) {
     });
     return () => {
       cancelAnimationFrame(raf);
+      removeEventListener('pointermove', depth);
       spies.forEach((t) => t.kill());
       ctx.revert();
     };
