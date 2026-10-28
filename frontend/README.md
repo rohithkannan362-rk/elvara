@@ -9,24 +9,24 @@ npm run build    # static site in dist/
 ```
 
 ## Structure
-Seven pages (hash routes, ):
+Seven pages (hash routes, `src/lib/router.js`):
 
 | Page | Address | What's on it |
 |---|---|---|
-| Home |  | Entrance film → problem film → investor snapshot → 3D living film → executive summary → proof points → doors to every page |
-| 01 The Collection |  | 3D product ring · Three series (12 products) · Applications |
-| 02 Our Story |  | The crisis · The global picture · The answer · One film, two jobs · Vision & mission · Our story · Founders |
-| 03 Product & Technology |  | Living film · Technology & IP · The products in 3D (ring, linking to the Collection) |
-| 04 Business |  | Business model · Pricing & GTM · Market & roadmap · Market sizing · Strategy · UN SDG impact · Operations |
-| 05 Investment |  | The ask · Financials & cap table · Cash flow & break-even · Ownership & terms · Risks & exits |
-| 06 Contact |  | The enquiry form — the last page, set apart as the gold button in the header |
+| Home | `#/` | Entrance film → problem film → investor snapshot → 3D living film → executive summary → proof points → doors to every page |
+| 01 The Collection | `#/collection` | 3D product ring · Three series (12 products) · Applications |
+| 02 Our Story | `#/story` | The crisis · The global picture · The answer · One film, two jobs · Vision & mission · Our story · Founders |
+| 03 Product & Technology | `#/product` | Living film · Technology & IP · The products in 3D (ring, linking to the Collection) |
+| 04 Business | `#/business` | Business model · Pricing & GTM · Market & roadmap · Market sizing · Strategy · UN SDG impact · Operations |
+| 05 Investment | `#/invest` | The ask · Financials & cap table · Cash flow & break-even · Ownership & terms · Risks & exits |
+| 06 Contact | `#/contact` | The enquiry form — the last page, set apart as the gold button in the header |
 
 Each chapter page opens with a cover and an "On this page" list, then stacks its sections under numbered dividers;
-a side index tracks the current section.  opens a page at a section.
-Pages and sections live in ;  in  says which component
+a side index tracks the current section. `#/story/founders` opens a page at a section.
+Pages and sections live in `src/data/sitemap.js`; `SECTION_VIEWS` in `src/components/Pages.jsx` says which component
 renders each section. The header nav bar (desktop) lists the five chapter pages with a panel of sections each, plus
 the Contact button; the **Menu** lists all seven. The floating dock (and ← / → keys) turns pages; every page change
-plays the curtain in .
+plays the curtain in `Transition.jsx`.
 
 ## Experience layer
 - `src/components/LivingFilm.jsx` — the interactive 3D film on Home (drag to turn, touch to ripple, freshness slider). It renders only while on screen.
