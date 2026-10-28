@@ -9,10 +9,19 @@ import { isOn, onChange as onSoundChange, toggle as toggleSound } from '../lib/s
 // with a hairline of reading progress along the top.
 export function Chrome({ ready, route, menuOpen, onMenu }) {
   const bar = useRef();
+  const [scrolled, setScrolled] = useState(false);
   const page = route.chapter === 'contact' ? CONTACT : chapterById[route.chapter];
 
   useEffect(() => {
-    gsap.from('.chrome > *', { opacity: 0, y: -12, stagger: 0.1, duration: 1.2, ease: 'expo.out', delay: 0.4 });
+    const intro = gsap.fromTo('.chrome > *', { opacity: 0, y: -12 }, { opacity: 1, y: 0, stagger: 0.1, duration: 1.2, ease: 'expo.out', delay: 0.4 });
+    // Once content moves under the header, give it a frosted backdrop.
+    const check = () => setScrolled(scrollY > 40);
+    check();
+    addEventListener('scroll', check, { passive: true });
+    return () => {
+      intro.kill();
+      removeEventListener('scroll', check);
+    };
   }, []);
 
   useEffect(() => {
@@ -36,7 +45,7 @@ export function Chrome({ ready, route, menuOpen, onMenu }) {
   return (
     <>
       <span className="progress" aria-hidden="true"><i ref={bar} /></span>
-      <header className={`chrome ${menuOpen ? 'is-menu' : ''}`}>
+      <header className={`chrome ${menuOpen ? 'is-menu' : ''} ${scrolled ? 'is-scrolled' : ''}`}>
         <a className="brand" href="#/" onClick={(e) => { e.preventDefault(); go('/', null, 'Home'); }} aria-label="ELVARA — home" data-cursor="hover">
           <span className="medallion medallion--sm"><img src={BRAND.logo} alt="" /></span>
           <span className="wordmark">ELVARA</span>
