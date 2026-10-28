@@ -13,7 +13,7 @@ Seven pages (hash routes, `src/lib/router.js`):
 
 | Page | Address | What's on it |
 |---|---|---|
-| Home | `#/` | Entrance film → problem film → investor snapshot → 3D living film → executive summary → proof points → doors to every page |
+| Home | `#/` | Entrance film → problem film → investor snapshot → 3D living film → "Three series. One material." with the 3D product ring → executive summary → proof points → doors to every page |
 | 01 The Collection | `#/collection` | 3D product ring · Three series (12 products) · Applications |
 | 02 Our Story | `#/story` | The crisis · The global picture · The answer · One film, two jobs · Vision & mission · Our story · Founders |
 | 03 Product & Technology | `#/product` | Living film · Technology & IP · The products in 3D (ring, linking to the Collection) |

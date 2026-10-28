@@ -3,7 +3,7 @@ import { gsap, ScrollTrigger, scrollToId } from '../lib/scroll';
 import { go } from '../lib/router';
 import { CHAPTERS, chapterById, CONTACT, PAGES, TICKER } from '../data/sitemap';
 import { BRAND, ASK, RETURNS, FINANCE, MARKET, GLANCE, FUNDING_PATH, TECH, PROTOTYPE_RESULT, EXEC_SUMMARY } from '../data/content';
-import { Words } from '../lib/Split';
+import { Words, Chars } from '../lib/Split';
 import { Problem, Need, Solution, Material } from './Story';
 import Collection from './Collection';
 import { Applications, Potential, Founders, Enquire } from './Closing';
@@ -49,6 +49,42 @@ const SECTION_ATMO = {
   model: 'night', pricing: 'night', market: 'olive', sizing: 'olive', strategy: 'olive', sdg: 'olive', operations: 'olive',
   ask: 'emerald', financials: 'emerald', cashflow: 'emerald', ownership: 'emerald', risks: 'emerald',
 };
+
+// Home: the three series and the 3D ring, right on the front page.
+function CollectionShowcase({ ready, onOpen }) {
+  const root = useRef();
+  useEffect(() => {
+    if (!ready) return;
+    const ctx = gsap.context(() => {
+      gsap.from('.showcase .c', {
+        scrollTrigger: { trigger: '.showcase .collection__intro', start: 'top 80%', end: 'bottom 45%', scrub: 1 },
+        yPercent: 120, opacity: 0, stagger: 0.04,
+      });
+      gsap.from('.showcase .collection__motto, .showcase .collection__sub', {
+        scrollTrigger: { trigger: '.showcase .collection__intro', start: 'top 60%' }, opacity: 0, y: 30, stagger: 0.12, duration: 1.2,
+      });
+    }, root);
+    return () => ctx.revert();
+  }, [ready]);
+  return (
+    <section className="collection showcase" ref={root} data-atmo="cream">
+      <div className="collection__intro wrap">
+        <p className="eyebrow">The collection</p>
+        <h2 className="display-xl"><Chars text="Three series." /><br /><em><Chars text="One material." /></em></h2>
+        <p className="collection__motto wordmark">{BRAND.motto}</p>
+        <p className="collection__sub lede">Twelve products in three series. Spin the ring, choose one and turn it in your hand — close enough to see the fibres.</p>
+      </div>
+      <div className="ring-wrap">
+        <Carousel3D ready={ready} onOpen={onOpen} />
+        <p className="ring-wrap__more">
+          <a className="link-cta" href="#/collection" data-cursor="hover" onClick={(e) => { e.preventDefault(); go('/collection', rectOf(e.currentTarget), 'The Collection'); }}>
+            Explore the full collection, series by series →
+          </a>
+        </p>
+      </div>
+    </section>
+  );
+}
 
 // Product & Technology carries the 3D ring too, pointing on to the full Collection page.
 function ProductRing({ ready, onOpen }) {
@@ -203,7 +239,7 @@ function CountUp({ value }) {
 }
 
 /* ───────── Home: the film, the investor snapshot, then the six pages ───────── */
-export function Home({ ready }) {
+export function Home({ ready, onOpen }) {
   const root = useEntrance(ready);
   const doors = [...CHAPTERS, CONTACT];
   return (
@@ -247,6 +283,8 @@ export function Home({ ready }) {
         </div>
 
         <LivingFilm ready={ready} />
+
+        <CollectionShowcase ready={ready} onOpen={onOpen} />
 
         <div className="summary wrap">
           <p className="eyebrow">Executive summary</p>

@@ -94,7 +94,7 @@ export default function App() {
 
   let page;
   if (isContact) page = <ContactPage ready={ready} interest={interest} />;
-  else if (!route.chapter || !chapter) page = <Home ready={ready} />;
+  else if (!route.chapter || !chapter) page = <Home ready={ready} onOpen={onOpen} />;
   else page = <ChapterPage ready={ready} chapterId={chapter.id} onOpen={onOpen} interest={interest} />;
 
   return (

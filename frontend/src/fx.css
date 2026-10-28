@@ -126,3 +126,9 @@
 .object--3 .object__body { animation-delay: -4.5s; }
 @keyframes float { from { translate: 0 -6px; } to { translate: 0 8px; } }
 @media (prefers-reduced-motion: reduce) { .object__body, .ring3d__sheen { animation: none; } }
+
+/* Collection showcase on Home, and the link on to the full Collection page. */
+.showcase { position: relative; margin: 4vh 0 14vh; }
+.showcase .collection__intro { padding-bottom: 4vh; }
+.ring-wrap__more { margin: 2.4rem 0 0; text-align: center; }
+.ring-wrap__more .link-cta { color: var(--fg); }
