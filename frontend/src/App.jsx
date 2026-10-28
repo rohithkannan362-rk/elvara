@@ -57,13 +57,21 @@ export default function App() {
     // Created a frame later so the sections' pin spacers already exist.
     let triggers = [];
     const raf = requestAnimationFrame(() => {
+      // Sections nest (a cream showcase inside an emerald page), so on any
+      // change the innermost section still in range wins — leaving a nested
+      // section hands the colours back to the one around it.
+      const settle = () => {
+        const live = triggers.filter((t) => t.isActive);
+        const pick = live[live.length - 1];
+        if (pick) setAtmosphere(pick.trigger.dataset.atmo);
+      };
       triggers = [...document.querySelectorAll('main [data-atmo]')].map((el) =>
         ScrollTrigger.create({
           trigger: el,
           start: 'top 55%',
           end: 'bottom 55%',
           refreshPriority: -1,
-          onToggle: (s) => s.isActive && setAtmosphere(el.dataset.atmo),
+          onToggle: settle,
         })
       );
       ScrollTrigger.sort();
