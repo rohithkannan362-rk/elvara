@@ -33,7 +33,13 @@ export function Chrome({ ready, route, menuOpen, onMenu }) {
         start: 0,
         end: 'max',
         refreshPriority: -1,
-        onUpdate: (s) => bar.current && (bar.current.style.transform = `scaleX(${s.progress})`),
+        onUpdate: (s) => {
+          const k = `scaleX(${s.progress})`;
+          if (bar.current) bar.current.style.transform = k;
+          // The same reading progress runs along the inside of the nav bar.
+          const n = document.querySelector('.nav__progress i');
+          if (n) n.style.transform = k;
+        },
       });
     });
     return () => {
@@ -63,8 +69,10 @@ export function Chrome({ ready, route, menuOpen, onMenu }) {
         </span>
         <div className="chrome__right">
           <SoundToggle />
-          <a className="link-cta chrome__cta" href="#/contact" onClick={(e) => { e.preventDefault(); go('/contact', null, 'Business enquiry'); }} data-cursor="hover">
-            Business enquiry
+          <a className={`nav-cta ${route.chapter === 'contact' ? 'is-current' : ''}`} href="#/contact" onClick={(e) => { e.preventDefault(); go('/contact', e.currentTarget.getBoundingClientRect(), 'Contact'); }} aria-current={route.chapter === 'contact' ? 'page' : undefined} data-cursor="hover">
+            <span className="tnum">{CONTACT.no}</span>
+            <span className="nav__roll"><span>Contact</span><span aria-hidden="true">Contact</span></span>
+            <i aria-hidden="true">→</i>
           </a>
           <button className={`burger ${menuOpen ? 'is-open' : ''}`} onClick={onMenu} aria-expanded={menuOpen} aria-label={menuOpen ? 'Close menu' : 'Open menu'} data-cursor="hover">
             <span className="burger__label">{menuOpen ? 'Close' : 'Menu'}</span>
@@ -76,13 +84,15 @@ export function Chrome({ ready, route, menuOpen, onMenu }) {
   );
 }
 
-// Primary navigation: the five pages in a glass pill. A highlight glides to
+// Primary navigation: the Collection and the four chapters in a glass pill (Contact
+// stands apart as the last page). A highlight glides to
 // whichever link is pointed at; each chapter opens a panel of its sections.
 function NavBar({ route }) {
   const root = useRef();
   const glow = useRef();
   const [open, setOpen] = useState(null);
-  const links = [...CHAPTERS, CONTACT];
+  const links = CHAPTERS;
+  const label = (c) => ({ collection: 'Collection', product: 'Product & Tech' })[c.id] || c.title;
   const timer = useRef();
 
   const moveGlow = (el) => {
@@ -127,10 +137,12 @@ function NavBar({ route }) {
   return (
     <nav className="nav" ref={root} aria-label="Pages" onMouseLeave={leave}>
       <span className="nav__glow" ref={glow} aria-hidden="true" />
+      <span className="nav__progress" aria-hidden="true"><i /></span>
       {links.map((c) => (
         <div key={c.id} className={`nav__item ${open === c.id ? 'is-open' : ''}`} onMouseEnter={enter(c)} onFocus={enter(c)}>
           <a href={`#/${c.id}`} className={`nav__link ${route.chapter === c.id ? 'is-current' : ''}`} onClick={toPage(c)} aria-current={route.chapter === c.id ? 'page' : undefined} data-cursor="hover">
-            <span className="tnum">{c.no}</span>{c.short === 'Product' ? 'Product & Tech' : c.title}
+            <span className="tnum">{c.no}</span>
+            <span className="nav__roll"><span>{label(c)}</span><span aria-hidden="true">{label(c)}</span></span>
             {c.subs && <i aria-hidden="true">▾</i>}
           </a>
           {c.subs && (

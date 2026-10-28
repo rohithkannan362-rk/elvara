@@ -5,7 +5,7 @@ import { gsap, ScrollTrigger, reducedMotion } from '../lib/scroll';
 //  · a trail of golden spores that drift off the cursor and fade,
 //  · magnetic buttons that lean toward the pointer and spring back,
 //  · "liquid" scroll — cards and media lean with scroll speed, then settle.
-const MAGNETIC = '.pill, .nav__link, .dock__btn, .burger, .sound, .link-cta, .portal__arrow, .menu__arrow, .px__next, .px__enquire, .enquire__send';
+const MAGNETIC = '.pill, .nav-cta, .nav__link, .dock__btn, .burger, .sound, .link-cta, .portal__arrow, .menu__arrow, .px__next, .px__enquire, .enquire__send';
 
 export default function Fx() {
   const canvas = useRef();

@@ -11,6 +11,7 @@ import { Vision, Technology, Impact, Operations, Business, Investment, Origin } 
 import { Strategy } from './Deck2';
 import { GlobalPicture, HowItWorks, MarketSizing, CashFlow, Ownership } from './Extras';
 import LivingFilm from './LivingFilm';
+import Carousel3D from './Carousel3D';
 
 // Which section component furnishes each section id in the site map.
 const SECTION_VIEWS = {
@@ -24,6 +25,7 @@ const SECTION_VIEWS = {
   material: (p) => <Material {...p} />,
   technology: (p) => <Technology {...p} />,
   series: (p) => <Collection {...p} />,
+  ring: (p) => <ProductRing {...p} />,
   applications: (p) => <Applications {...p} onOpen={(id) => p.onOpen(id, null)} />,
   model: (p) => <Business {...p} part="model" />,
   pricing: (p) => <Business {...p} part="pricing" />,
@@ -43,10 +45,24 @@ const SECTION_VIEWS = {
 // world has already re-tinted by the time that section arrives.
 const SECTION_ATMO = {
   crisis: 'night', global: 'night', answer: 'emerald', how: 'emerald', vision: 'emerald', origin: 'night', founders: 'night',
-  material: 'olive', technology: 'night', series: 'cream', applications: 'emerald',
+  material: 'olive', technology: 'night', ring: 'cream', series: 'cream', applications: 'emerald',
   model: 'night', pricing: 'night', market: 'olive', sizing: 'olive', strategy: 'olive', sdg: 'olive', operations: 'olive',
   ask: 'emerald', financials: 'emerald', cashflow: 'emerald', ownership: 'emerald', risks: 'emerald',
 };
+
+// Product & Technology carries the 3D ring too, pointing on to the full Collection page.
+function ProductRing({ ready, onOpen }) {
+  return (
+    <section className="ring-wrap ring-wrap--page" data-atmo="cream">
+      <Carousel3D ready={ready} onOpen={onOpen} />
+      <p className="ring-wrap__more">
+        <a className="link-cta" href="#/collection" data-cursor="hover" onClick={(e) => { e.preventDefault(); go('/collection', rectOf(e.currentTarget), 'The Collection'); }}>
+          See the full collection, series by series →
+        </a>
+      </p>
+    </section>
+  );
+}
 
 const rectOf = (el) => el?.getBoundingClientRect?.() ?? null;
 const pageAtmo = (atmo) => (atmo === 'cream' ? 'night' : atmo);
@@ -186,7 +202,7 @@ function CountUp({ value }) {
   return <b ref={ref}>{value}</b>;
 }
 
-/* ───────── Home: the film, the investor snapshot, then the five pages ───────── */
+/* ───────── Home: the film, the investor snapshot, then the six pages ───────── */
 export function Home({ ready }) {
   const root = useEntrance(ready);
   const doors = [...CHAPTERS, CONTACT];
@@ -265,10 +281,10 @@ export function Home({ ready }) {
         </div>
 
         <div className="hub__head wrap">
-          <p className="eyebrow">The company in five pages</p>
-          <h2 className="display-xl" data-words><Words text="Every detail." /><br /><em><Words text="Five pages." /></em></h2>
+          <p className="eyebrow">The company in six pages</p>
+          <h2 className="display-xl" data-words><Words text="Every detail." /><br /><em><Words text="Six pages." /></em></h2>
           <p className="lede" data-rise>
-            Each page tells one part of the story from start to finish — why ELVARA exists, the material and its twelve products,
+            Each page tells one part of the story from start to finish — the twelve products, why ELVARA exists, the material,
             the business, the investment, and how to reach the founders.
           </p>
         </div>
