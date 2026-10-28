@@ -220,7 +220,8 @@ export function Operations({ ready }) {
 }
 
 /* ───────── 11 BUSINESS MODEL ───────── */
-export function Business({ ready }) {
+export function Business({ ready, part }) {
+  const show = (k) => !part || part === k;
   const [costBind, costTip] = useTip();
   const [chBind, chTip] = useTip();
   const root = useReveal(ready, (r) => {
@@ -235,9 +236,10 @@ export function Business({ ready }) {
   return (
     <section id="business" className="deck biz" ref={root} data-atmo="night">
       <div className="wrap">
-        <Eyebrow n="11">Business model</Eyebrow>
-        <h2 className="display-md"><Words text="One material, three revenue engines." /></h2>
+        <Eyebrow n="11">{part === 'pricing' ? 'Pricing & go-to-market' : 'Business model'}</Eyebrow>
+        <h2 className="display-md"><Words text={part === 'pricing' ? 'Pricing, segments and the route to market.' : 'One material, three revenue engines.'} /></h2>
 
+        {show('model') && <>
         <div className="streams">
           {REVENUE_STREAMS.map((s) => (
             <div className="stream" key={s.t} data-r>
@@ -288,21 +290,25 @@ export function Business({ ready }) {
             </div>
           </figure>
         </div>
-        <BusinessDetail />
+        </>}
+        {show('pricing') && <BusinessDetail />}
       </div>
     </section>
   );
 }
 
 /* ───────── 12 INVESTMENT ───────── */
-export function Investment({ ready }) {
+export function Investment({ ready, part }) {
+  const show = (k) => !part || part === k;
   const [bind, tip] = useTip();
   const root = useReveal(ready, (r) => {
-    gsap.from(r.querySelectorAll('.vbar__fill'), {
-      scrollTrigger: { trigger: r.querySelector('.vbars'), start: 'top 80%' },
-      scaleY: 0, transformOrigin: 'bottom', stagger: 0.12, duration: 1.4, ease: 'expo.out',
-    });
+    if (r.querySelector('.vbars'))
+      gsap.from(r.querySelectorAll('.vbar__fill'), {
+        scrollTrigger: { trigger: r.querySelector('.vbars'), start: 'top 80%' },
+        scaleY: 0, transformOrigin: 'bottom', stagger: 0.12, duration: 1.4, ease: 'expo.out',
+      });
     const amt = r.querySelector('.ask__amount b');
+    if (!amt) return;
     const o = { v: 0 };
     gsap.to(o, {
       v: 1.5, duration: 2, ease: 'power2.out',
@@ -314,7 +320,8 @@ export function Investment({ ready }) {
   return (
     <section id="investment" className="deck invest" ref={root} data-atmo="emerald">
       <div className="wrap">
-        <Eyebrow n="13">Investment</Eyebrow>
+        <Eyebrow n="13">{{ financials: 'Financials & cap table', risks: 'Risks & exits' }[part] || 'Investment'}</Eyebrow>
+        {show('ask') && <>
         <div className="ask">
           <div>
             <p className="ask__amount display-xl tnum">₹<b>0.0</b><span> Cr</span></p>
@@ -367,10 +374,14 @@ export function Investment({ ready }) {
           </div>
         </div>
 
-        <Financials />
-        <CapTable />
+        </>}
+        {show('financials') && <>
+          <h2 className="display-md"><Words text="Every number, on the table." /></h2>
+          <Financials />
+          <CapTable />
+        </>}
 
-        <div className="path" data-r>
+        {show('ask') && <div className="path" data-r>
           <p className="eyebrow">Funding path</p>
           <ol>
             {FUNDING_PATH.map((f, i) => (
@@ -381,9 +392,9 @@ export function Investment({ ready }) {
               </li>
             ))}
           </ol>
-        </div>
+        </div>}
 
-        <div className="invest__split">
+        {show('risks') && <div className="invest__split">
           <div>
             <h3 className="display-sm"><Words text="Risks, anticipated." /></h3>
             <ul className="risks">
@@ -400,7 +411,7 @@ export function Investment({ ready }) {
               ))}
             </ul>
           </div>
-        </div>
+        </div>}
       </div>
     </section>
   );

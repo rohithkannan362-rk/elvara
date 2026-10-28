@@ -1,87 +1,67 @@
 import { useEffect, useRef, useState } from 'react';
-import { gsap, ScrollTrigger, scrollToId } from '../lib/scroll';
+import { gsap, ScrollTrigger } from '../lib/scroll';
 import { BRAND } from '../data/content';
+import { chapterById, CONTACT } from '../data/sitemap';
+import { go } from '../lib/router';
 import { isOn, onChange as onSoundChange, toggle as toggleSound } from '../lib/sound';
 
-const CHAPTERS = [
-  { id: 'problem', label: 'Problem' },
-  { id: 'need', label: 'Need' },
-  { id: 'solution', label: 'ELVARA' },
-  { id: 'vision', label: 'Vision' },
-  { id: 'material', label: 'Material' },
-  { id: 'technology', label: 'Technology' },
-  { id: 'impact', label: 'Impact' },
-  { id: 'collection', label: 'Collection' },
-  { id: 'applications', label: 'Applications' },
-  { id: 'operations', label: 'Operations' },
-  { id: 'business', label: 'Business' },
-  { id: 'strategy', label: 'Strategy' },
-  { id: 'investment', label: 'Investment' },
-  { id: 'founders', label: 'Founders' },
-  { id: 'enquire', label: 'Enquire' },
-];
-
-// Fixed header, chapter index and scroll progress — kept deliberately quiet.
-export function Chrome({ ready }) {
-  const [active, setActive] = useState('problem');
+// Fixed header: brand, where you are, sound, enquiry and the menu button,
+// with a hairline of reading progress along the top.
+export function Chrome({ ready, route, menuOpen, onMenu }) {
   const bar = useRef();
+  const page = route.chapter === 'contact' ? CONTACT : chapterById[route.chapter];
+
+  useEffect(() => {
+    gsap.from('.chrome > *', { opacity: 0, y: -12, stagger: 0.1, duration: 1.2, ease: 'expo.out', delay: 0.4 });
+  }, []);
 
   useEffect(() => {
     if (!ready) return;
-    let triggers = [];
-    // Created after the sections' pins exist so positions include pin spacing.
+    let t;
+    // A frame later, so the page's pins already exist.
     const id = requestAnimationFrame(() => {
-      triggers = CHAPTERS.map(({ id }) =>
-        ScrollTrigger.create({
-          trigger: `#${id}`,
-          start: 'top 55%',
-          end: 'bottom 55%',
-          refreshPriority: -1,
-          onToggle: (s) => s.isActive && setActive(id),
-        })
-      );
-      triggers.push(
-        ScrollTrigger.create({
-          start: 0,
-          end: 'max',
-          refreshPriority: -1,
-          onUpdate: (s) => bar.current && (bar.current.style.transform = `scaleY(${s.progress})`),
-        })
-      );
+      t = ScrollTrigger.create({
+        start: 0,
+        end: 'max',
+        refreshPriority: -1,
+        onUpdate: (s) => bar.current && (bar.current.style.transform = `scaleX(${s.progress})`),
+      });
     });
-    gsap.from('.chrome > *', { opacity: 0, y: -12, stagger: 0.1, duration: 1.2, ease: 'expo.out', delay: 0.4 });
     return () => {
       cancelAnimationFrame(id);
-      triggers.forEach((t) => t.kill());
+      t?.kill();
     };
-  }, [ready]);
+  }, [ready, route.chapter]);
 
   return (
     <>
-      <header className="chrome">
-        <button className="brand" onClick={() => scrollToId('problem')} aria-label="ELVARA — back to start" data-cursor="hover">
+      <span className="progress" aria-hidden="true"><i ref={bar} /></span>
+      <header className={`chrome ${menuOpen ? 'is-menu' : ''}`}>
+        <a className="brand" href="#/" onClick={(e) => { e.preventDefault(); go('/', null, 'Home'); }} aria-label="ELVARA — home" data-cursor="hover">
           <span className="medallion medallion--sm"><img src={BRAND.logo} alt="" /></span>
           <span className="wordmark">ELVARA</span>
-        </button>
+        </a>
         <span className="chrome__chapter" aria-live="polite">
-          <span className="tnum">{String(CHAPTERS.findIndex((c) => c.id === active) + 1).padStart(2, '0')}</span>
-          <span>{CHAPTERS.find((c) => c.id === active)?.label}</span>
+          {page ? (
+            <>
+              <span className="tnum">{page.no}</span>
+              <span>{page.title}</span>
+            </>
+          ) : (
+            <span>Material innovation showroom</span>
+          )}
         </span>
         <div className="chrome__right">
           <SoundToggle />
-          <button className="link-cta" onClick={() => scrollToId('enquire')} data-cursor="hover">
+          <a className="link-cta chrome__cta" href="#/contact" onClick={(e) => { e.preventDefault(); go('/contact', null, 'Business enquiry'); }} data-cursor="hover">
             Business enquiry
+          </a>
+          <button className={`burger ${menuOpen ? 'is-open' : ''}`} onClick={onMenu} aria-expanded={menuOpen} aria-label={menuOpen ? 'Close menu' : 'Open menu'} data-cursor="hover">
+            <span className="burger__label">{menuOpen ? 'Close' : 'Menu'}</span>
+            <span className="burger__icon" aria-hidden="true"><i /><i /></span>
           </button>
         </div>
       </header>
-      <nav className="index" aria-label="Chapters">
-        <span className="index__rail"><i ref={bar} /></span>
-        {CHAPTERS.map((c) => (
-          <button key={c.id} className={`index__item ${active === c.id ? 'is-active' : ''}`} onClick={() => scrollToId(c.id)} data-cursor="hover">
-            <span>{c.label}</span>
-          </button>
-        ))}
-      </nav>
     </>
   );
 }

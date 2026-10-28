@@ -1,6 +1,6 @@
 import { useEffect, useRef, useState } from 'react';
 import { gsap, ScrollTrigger, reducedMotion } from '../lib/scroll';
-import { BRAND, PROBLEM_STATS, COMPARISON, LAYERS, SPECS, PROCESS, PALETTE, ALL_PRODUCTS, INDIA_FACTS } from '../data/content';
+import { BRAND, PROBLEM_STATS, COMPARISON, LAYERS, SPECS, PROCESS, PALETTE, ALL_PRODUCTS, INDIA_FACTS, heroVideoSrc } from '../data/content';
 import { Words, Chars } from '../lib/Split';
 
 /* ───────────────────────── 01 PROBLEM ───────────────────────── */
@@ -12,15 +12,19 @@ export function Problem({ ready }) {
   useEffect(() => {
     if (!ready) return;
     const v = film.current;
-    if (v) {
-      // React doesn't always reflect `muted` to the DOM; autoplay policies require it.
-      v.muted = true;
-      v.play().catch(() => {});
-    }
+    // React doesn't always reflect `muted` to the DOM; autoplay policies require it.
+    if (v) v.muted = true;
     const ctx = gsap.context(() => {
-      // Built paused during the entrance; plays the moment the visitor arrives.
+      // Built paused during the entrance; plays the moment the visitor arrives —
+      // and the film starts from its first frame then, so the opening isn't missed.
       const intro = gsap.timeline({ paused: true });
-      const play = () => intro.play(0);
+      const play = () => {
+        if (v) {
+          v.currentTime = 0;
+          v.play().catch(() => {});
+        }
+        intro.play(0);
+      };
       if (window.__elvaraEntered) play();
       else addEventListener('elvara:entered', play, { once: true });
       intro
@@ -67,7 +71,7 @@ export function Problem({ ready }) {
       <div className="problem__stage">
         <div className="problem__filmwrap">
           <video
-            ref={film} className="problem__film" src={BRAND.heroVideo} muted autoPlay loop playsInline preload="auto"
+            ref={film} className="problem__film" src={heroVideoSrc()} muted loop playsInline preload="auto"
             aria-label="Problem statement film: plastic packaging waste"
             onLoadedMetadata={(e) => {
               const s = Math.round(e.currentTarget.duration);

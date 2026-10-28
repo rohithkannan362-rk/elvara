@@ -11,8 +11,14 @@ export const BRAND = {
   email: 'aafreenayasmine30@gmail.com',
   location: 'Chennai, Tamil Nadu, India',
   logo: `${M}/logo.jpg`,
+  // The problem film: widescreen, plus a portrait cut composed for phones.
   heroVideo: `${M}/vid/problem.mp4`,
+  heroVideoPortrait: `${M}/vid/problem-portrait.mp4`,
 };
+
+// Phones held upright get the portrait cut, so the film's title is never cropped.
+export const heroVideoSrc = () =>
+  typeof window !== 'undefined' && innerWidth <= 820 && innerHeight > innerWidth ? BRAND.heroVideoPortrait : BRAND.heroVideo;
 
 // Colour authority: the supplied palette, plus tones sampled from the silk
 // reference (champagne highlight) and the logo's indicator dots.

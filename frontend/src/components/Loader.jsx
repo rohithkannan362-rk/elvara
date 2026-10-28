@@ -1,6 +1,6 @@
 import { useEffect, useRef, useState } from 'react';
 import { gsap } from '../lib/scroll';
-import { BRAND, CATEGORIES } from '../data/content';
+import { BRAND, CATEGORIES, heroVideoSrc } from '../data/content';
 import { Chars } from '../lib/Split';
 import { autoStart as autoStartSound } from '../lib/sound';
 
@@ -37,7 +37,7 @@ export default function Loader({ onReveal, onDone }) {
     const hero = document.createElement('video');
     hero.muted = true;
     hero.preload = 'auto';
-    hero.src = BRAND.heroVideo;
+    hero.src = heroVideoSrc();
 
     // Build every chapter right away, behind the film; then start the music and
     // rest the page's silk background so only the film is drawing.

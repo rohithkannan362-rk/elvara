@@ -66,7 +66,36 @@ export default function ProductExperience({ productId, origin, onClose, onNaviga
     gsap.ticker.add(raf);
     scroller.current.focus({ preventScroll: true });
     root.current._lenis = lenis;
+
+    // Grab and turn: dragging with a mouse moves through the film like
+    // turning the object in your hand. Touch already scrolls natively.
+    const sc = scroller.current;
+    sc.classList.add('is-grab');
+    let drag = null;
+    const down = (e) => {
+      if (e.pointerType !== 'mouse' || e.button !== 0) return;
+      drag = { x: e.clientX, y: e.clientY, from: lenis.scroll };
+      sc.classList.add('is-grabbing');
+    };
+    const dragMove = (e) => {
+      if (!drag) return;
+      const d = (drag.x - e.clientX) * -1.6 + (drag.y - e.clientY) * 1.6;
+      lenis.scrollTo(Math.max(0, Math.min(lenis.limit, drag.from + d)), { lerp: 0.12 });
+    };
+    const up = () => {
+      drag = null;
+      sc.classList.remove('is-grabbing');
+    };
+    sc.addEventListener('pointerdown', down);
+    addEventListener('pointermove', dragMove);
+    addEventListener('pointerup', up);
+    const unbindDrag = () => {
+      sc.removeEventListener('pointerdown', down);
+      removeEventListener('pointermove', dragMove);
+      removeEventListener('pointerup', up);
+    };
     return () => {
+      unbindDrag();
       gsap.ticker.remove(raf);
       lenis.destroy();
       document.documentElement.classList.remove('is-locked');
@@ -238,7 +267,7 @@ export default function ProductExperience({ productId, origin, onClose, onNaviga
       <div className="px__ui">
         <header className="px__top">
           <button className="px__back" onClick={() => close()} data-cursor="hover" aria-label="Close product view">
-            <i aria-hidden="true">←</i> Collection
+            <i aria-hidden="true">←</i> Back
           </button>
           <p className="px__crumb">
             <span>{product.category.name}</span>
@@ -281,7 +310,7 @@ export default function ProductExperience({ productId, origin, onClose, onNaviga
             {STAGES.map((s) => <b key={s} style={{ left: `${s * 100}%` }} />)}
           </div>
           <div className="px__hint" style={{ opacity: seg === 0 ? 1 : 0 }}>
-            <span>Scroll to open</span><i />
+            <span>Scroll or drag to turn it</span><i />
           </div>
           {loaded < 1 && <span className="px__loading">Loading film</span>}
         </div>

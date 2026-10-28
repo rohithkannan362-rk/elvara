@@ -52,7 +52,7 @@ function installSectionPalettes() {
   document.head.appendChild(el);
 }
 
-const FLOATING = ['.chrome', '.index', '.cursor'];
+const FLOATING = ['.chrome', '.progress', '.index', '.cursor'];
 
 function applyFloating() {
   const fg = atmo.fg;
@@ -83,7 +83,9 @@ export function applyCss() {
 let tl;
 export function setAtmosphere(name, duration = 1.6) {
   const target = typeof name === 'string' ? ATMOS[name] : name;
-  if (!target || atmo.name === name) return;
+  if (!target) return;
+  // A new page may have mounted fresh floating overlays: paint them now.
+  if (atmo.name === name) return applyFloating();
   atmo.name = name;
   tl?.kill();
   tl = gsap.timeline({ onUpdate: applyFloating, defaults: { duration, ease: 'power2.inOut' } });

@@ -3,6 +3,7 @@ import { EffectComposer } from 'three/examples/jsm/postprocessing/EffectComposer
 import { RenderPass } from 'three/examples/jsm/postprocessing/RenderPass.js';
 import { UnrealBloomPass } from 'three/examples/jsm/postprocessing/UnrealBloomPass.js';
 import { OutputPass } from 'three/examples/jsm/postprocessing/OutputPass.js';
+import { ShaderPass } from 'three/examples/jsm/postprocessing/ShaderPass.js';
 
 // ELVARA · "The problem" film — rendered offline, frame by frame, deterministic.
 //  0–10 s  An ocean of floating plastic under a smoggy sun; the debris is drawn
@@ -106,7 +107,7 @@ const SKY = /* glsl */ `
 const skyMat = new THREE.ShaderMaterial({
   uniforms: skyU, side: THREE.BackSide, depthWrite: false,
   vertexShader: `varying vec3 vD; void main(){ vD = position; gl_Position = projectionMatrix*modelViewMatrix*vec4(position,1.); }`,
-  fragmentShader: `${SKY} varying vec3 vD; void main(){ vec3 d = normalize(vD); vec3 c = d.y < 0. ? mix(uHorizon*0.5, uZenith*0.4, clamp(-d.y*4.,0.,1.)) : sky(d); gl_FragColor = vec4(c,1.); }`,
+  fragmentShader: `${SKY} varying vec3 vD; void main(){ vec3 d = normalize(vD); vec3 c = d.y < 0.03 ? sky(normalize(vec3(d.x, 0.03, d.z))) : sky(d); gl_FragColor = vec4(c,1.); }`,
 });
 const skyDome = new THREE.Mesh(new THREE.SphereGeometry(900, 64, 32), skyMat);
 ocean.add(skyDome);
@@ -165,7 +166,7 @@ const water = new THREE.Mesh(waterGeo, new THREE.ShaderMaterial({
       c += vec3(0.22, 0.23, 0.2) * foam * (0.25 + 0.75*max(dot(n, uSunDir), 0.2));
       float d = length(vW - cameraPosition);
       vec3 fogC = sky(normalize(vec3(vW.x-cameraPosition.x, 0.03, vW.z-cameraPosition.z)));
-      c = mix(c, fogC, 1.0 - exp(-d*0.011));
+      c = mix(c, fogC, max(1.0 - exp(-d*0.011), smoothstep(300.0, 620.0, d)));
       gl_FragColor = vec4(c, 1.0);
     }`,
 }));
@@ -187,9 +188,11 @@ function sheetGeo(seed) {
   for (let i = 0; i < p.count; i++) {
     let x = p.getX(i), y = p.getY(i);
     const nx = x * (1 + 0.28 * Math.sin(y * 5 + seed)), ny = y * (1 + 0.22 * Math.sin(x * 4 + seed * 1.3));
-    const z = 0.07 * Math.sin(nx * 9 + seed) * Math.cos(ny * 7 + seed * 0.7)
-      + 0.05 * Math.sin((nx * 1.3 + ny) * 17 + seed * 3)
-      + 0.02 * Math.sin(nx * 31 - ny * 23 + seed)
+    // Irregular creases at seed-chosen angles — no grid-aligned ripples, which read as a plaid weave.
+    const crease = (a, o) => Math.abs(nx * Math.cos(a) + ny * Math.sin(a) + o);
+    const z = 0.05 * Math.sin((nx * Math.cos(seed) + ny * Math.sin(seed)) * 7 + seed)
+      + 0.1 * crease(seed * 1.7, 0.1 * Math.sin(seed * 3)) - 0.07 * crease(seed * 2.9 + 1, -0.15)
+      + 0.05 * crease(seed * 4.3 + 2, 0.2)
       + 0.16 * (nx * nx - ny * ny) * Math.sin(seed)
       + 0.2 * Math.max(0, nx * 0.8 - ny * 0.6 + 0.05) * Math.cos(seed * 2.1);
     p.setXYZ(i, nx, ny, z);
@@ -206,7 +209,7 @@ function bagGeo(seed) {
     const a = Math.atan2(z, x), v = (y + 0.55) / 1.1;
     let r = Math.hypot(x, z);
     r *= 1 - 0.72 * sstep(0.55, 0.95, v); // gathered at the handles
-    r += 0.05 * Math.sin(a * 9 + v * 6 + seed) + 0.03 * Math.sin(a * 17 - v * 11 + seed * 2) + 0.02 * Math.sin(v * 23 + a * 3);
+    r += 0.05 * Math.sin(a * 7 + v * 6 + seed) + 0.025 * Math.sin(a * 11 - v * 5 + seed * 2);
     p.setXYZ(i, Math.cos(a) * r, y + 0.04 * Math.sin(a * 5 + seed), Math.sin(a) * r * 0.55);
   }
   g.rotateZ(Math.PI / 2); // floats on its side
@@ -221,7 +224,8 @@ const plastic = new THREE.MeshPhysicalMaterial({
   clearcoat: 0.6, clearcoatRoughness: 0.18, side: THREE.DoubleSide, envMapIntensity: 2.4,
 });
 const plasticSolid = new THREE.MeshPhysicalMaterial({
-  color: 0xffffff, roughness: 0.28, metalness: 0, transparent: true, opacity: 0.86,
+  // A faint self-glow stands in for light passing through thin film.
+  color: 0xffffff, roughness: 0.28, metalness: 0, emissive: 0x4a5a52, emissiveIntensity: 0.5,
   iridescence: 0.7, iridescenceIOR: 1.3, iridescenceThicknessRange: [180, 520],
   clearcoat: 0.5, clearcoatRoughness: 0.2, side: THREE.DoubleSide, envMapIntensity: 0.45,
 });
@@ -281,7 +285,7 @@ function updateOceanDebris(t) {
 }
 
 // Microplastic dust: soft motes that catch the sun, later drawn into the swirl.
-function dust(n, box, color, size) {
+function dust(n, box, color, size, range = [8, 160]) {
   const g = new THREE.BufferGeometry();
   const pos = new Float32Array(n * 3), sz = new Float32Array(n), sd = new Float32Array(n);
   for (let i = 0; i < n; i++) {
@@ -292,10 +296,10 @@ function dust(n, box, color, size) {
   g.setAttribute('aSize', new THREE.BufferAttribute(sz, 1));
   g.setAttribute('aSeed', new THREE.BufferAttribute(sd, 1));
   const m = new THREE.ShaderMaterial({
-    uniforms: { uTime: { value: 0 }, uPix: { value: H * SS / 1080 }, uSwirl: { value: 0 }, uCenter: { value: GYRE }, uCol: { value: col(color) }, uAlpha: { value: 1 } },
+    uniforms: { uTime: { value: 0 }, uPix: { value: H * SS / 1080 }, uSwirl: { value: 0 }, uCenter: { value: GYRE }, uCol: { value: col(color) }, uAlpha: { value: 1 }, uNear: { value: range[0] }, uFar: { value: range[1] } },
     transparent: true, depthWrite: false, blending: THREE.AdditiveBlending,
     vertexShader: /* glsl */ `
-      attribute float aSize, aSeed; uniform float uTime, uPix, uSwirl; uniform vec3 uCenter; varying float vA;
+      attribute float aSize, aSeed; uniform float uTime, uPix, uSwirl, uNear, uFar; uniform vec3 uCenter; varying float vA;
       void main(){
         vec3 p = position;
         p += vec3(sin(uTime*0.3+aSeed*20.)*0.7, sin(uTime*0.22+aSeed*13.)*0.5, cos(uTime*0.25+aSeed*7.)*0.7);
@@ -304,7 +308,7 @@ function dust(n, box, color, size) {
         vec4 mv = modelViewMatrix*vec4(p,1.); gl_Position = projectionMatrix*mv;
         float dist = -mv.z;
         gl_PointSize = min(aSize*uPix*(300.0/dist), 26.0*uPix);
-        vA = smoothstep(2.0, 8.0, dist)*(1.0 - smoothstep(90., 160., dist))*(0.55+0.45*sin(uTime*1.7+aSeed*40.));
+        vA = smoothstep(uNear*0.25, uNear, dist)*(1.0 - smoothstep(uFar*0.55, uFar, dist))*(0.55+0.45*sin(uTime*1.7+aSeed*40.));
       }`,
     fragmentShader: /* glsl */ `
       uniform vec3 uCol; uniform float uAlpha; varying float vA;
@@ -338,7 +342,7 @@ const SUN2 = new THREE.Vector3(1.0, 0.42, 0.3).normalize();
       vec3 c = vec3(0.002,0.006,0.005) + vec3(0.03,0.05,0.035)*pow(s,3.) + vec3(0.12,0.09,0.05)*pow(s,24.);
       gl_FragColor = vec4(c,1.); }`,
   })));
-  space.add(dust(2600, [-700, 700, -700, 700, -700, 700], '#f3ebd6', 0.035));
+  space.add(dust(3200, [-900, 900, -900, 900, -900, 900], "#f3ebd6", 1.6, [160, 2400]));
 }
 const tilt = new THREE.Group();
 tilt.rotation.set(0.12, 0, 0.3);
@@ -368,8 +372,17 @@ const earth = new THREE.Mesh(new THREE.SphereGeometry(10, 192, 128), new THREE.S
       float cl = smoothstep(0.56, 0.8, fbm(n*3.3 + vec3(uTime*0.025, 0., uTime*0.012)));
       vec3 c3 = surf*(dif*1.5*uSunCol + 0.012) + spec*uSunCol*0.9;
       c3 = mix(c3, vec3(0.78,0.78,0.74)*(dif*1.25 + 0.01), cl*0.72);
+      // Night side: faint city lights along the coasts, hidden under cloud.
+      float night = smoothstep(0.08, -0.15, dot(N, uSunDir));
+      float coast = land * smoothstep(0.55, 0.5, c) + land * 0.25;
+      float city = smoothstep(0.62, 0.8, vnoise(n*90.0)) * smoothstep(0.45, 0.7, fbm(n*12.0));
+      c3 += vec3(1.0, 0.72, 0.38) * city * coast * night * (1.0 - cl) * 0.55;
+      // Soft terminator glow and a scattering haze at the limb.
+      float term = exp(-pow(dot(N, uSunDir) / 0.12, 2.0));
+      c3 += vec3(0.45, 0.28, 0.14) * term * 0.05;
       float fres = pow(1.0 - max(dot(N, V), 0.0), 3.0);
-      c3 += vec3(0.32,0.5,0.4)*fres*(0.08 + dif)*0.7;
+      c3 = mix(c3, vec3(0.36,0.56,0.62)*(0.06 + dif*1.1), fres*0.55);
+      c3 += vec3(0.32,0.5,0.4)*fres*(0.08 + dif)*0.5;
       gl_FragColor = vec4(c3, 1.0);
     }`,
 }));
@@ -453,7 +466,8 @@ function updateRing(t) {
     mesh.instanceMatrix.needsUpdate = true;
   }
 }
-space.add(new THREE.AmbientLight(0x1a2a22, 0.25));
+// Soft earthshine so the shadowed side of each fragment reads as dim plastic, not a hole.
+space.add(new THREE.HemisphereLight(0x7f9d8c, 0x4a5248, 1.3));
 const sSun = new THREE.DirectionalLight(0xfff1dc, 2.2);
 sSun.position.copy(SUN2).multiplyScalar(200);
 space.add(sSun);
@@ -467,6 +481,13 @@ composer.setPixelRatio(1);
 composer.setSize(W * SS, H * SS);
 const renderPass = new RenderPass(ocean, camera);
 composer.addPass(renderPass);
+// Scrub any invalid (NaN/Inf) pixels before bloom, which would otherwise smear them into black blots.
+composer.addPass(new ShaderPass({
+  uniforms: { tDiffuse: { value: null } },
+  vertexShader: `varying vec2 vUv; void main(){ vUv = uv; gl_Position = projectionMatrix*modelViewMatrix*vec4(position,1.); }`,
+  fragmentShader: `uniform sampler2D tDiffuse; varying vec2 vUv; void main(){ vec4 c = texture2D(tDiffuse, vUv);
+    bool bad = any(isnan(c)) || any(isinf(c)); gl_FragColor = bad ? vec4(0.0, 0.0, 0.0, 1.0) : min(c, vec4(60.0)); }`,
+}));
 composer.addPass(new UnrealBloomPass(new THREE.Vector2(W * SS, H * SS), 0.55, 0.55, 0.92));
 composer.addPass(new OutputPass());
 
@@ -525,7 +546,8 @@ function drawTitle(ctx, t) {
   if (t < 14.9) return;
   const s = portrait ? W / 1080 : H / 1080;
   const L = portrait
-    ? { x: 90 * s, y: 1120 * s, w: 900 * s, h1: 74 * s, eb: 22 * s, num: 64 * s, lab: 23 * s, col: 300 * s, gap: 88 * s }
+    // Kept inside the centre 780px: phones narrower than 9:16 crop the sides.
+    ? { x: 150 * s, y: 1120 * s, w: 780 * s, h1: 66 * s, eb: 22 * s, num: 58 * s, lab: 21 * s, col: 262 * s, gap: 88 * s }
     : { x: 1030 * s, y: 320 * s, w: 800 * s, h1: 80 * s, eb: 18 * s, num: 66 * s, lab: 20 * s, col: 272 * s, gap: 90 * s };
   ctx.save();
   ctx.textBaseline = 'alphabetic';
@@ -540,7 +562,8 @@ function drawTitle(ctx, t) {
   ctx.fillStyle = g;
   ctx.fillRect(0, 0, W, H);
 
-  line(ctx, t, 15.15, 1.1, () => {
+  // On phones the page already shows the chapter label above the film.
+  if (!portrait) line(ctx, t, 15.15, 1.1, () => {
     ctx.font = `500 ${L.eb}px Author`;
     ctx.letterSpacing = `${0.34 * L.eb}px`;
     ctx.fillStyle = GOLD;
@@ -618,10 +641,28 @@ function fadeBlack(t) {
     sstep(19.15, 19.95, t)
   );
 }
+// Film grain: a fixed bank of noise tiles, cycled per frame (deterministic).
+const GRAIN = Array.from({ length: 8 }, () => {
+  const c = document.createElement('canvas');
+  c.width = c.height = 256;
+  const x = c.getContext('2d');
+  const img = x.createImageData(256, 256);
+  for (let i = 0; i < img.data.length; i += 4) {
+    const v = 128 + (R() + R() + R() - 1.5) * 90;
+    img.data[i] = img.data[i + 1] = img.data[i + 2] = v;
+    img.data[i + 3] = 255;
+  }
+  x.putImageData(img, 0, 0);
+  return c;
+});
 function composite(t) {
-  octx.imageSmoothingEnabled = true;
-  octx.imageSmoothingQuality = 'high';
-  octx.drawImage(renderer.domElement, 0, 0, W, H);
+  // The motion-blurred frame was accumulated into `out` by renderAt.
+  octx.save();
+  octx.globalCompositeOperation = 'overlay';
+  octx.globalAlpha = 0.07;
+  octx.fillStyle = octx.createPattern(GRAIN[Math.round(t * FPS) % GRAIN.length], 'repeat');
+  octx.fillRect(0, 0, W, H);
+  octx.restore();
   // Lens vignette.
   const v = octx.createRadialGradient(W / 2, H / 2, Math.min(W, H) * 0.35, W / 2, H / 2, Math.hypot(W, H) * 0.6);
   v.addColorStop(0, 'rgba(0,0,0,0)');
@@ -632,13 +673,25 @@ function composite(t) {
   const f = fadeBlack(t);
   if (f > 0) { octx.fillStyle = `rgba(0,0,0,${f})`; octx.fillRect(0, 0, W, H); }
 }
+// Motion blur: a 180° shutter, sampled several times within the frame and averaged.
+const BLUR = +q.get('blur') || 5;
 function renderAt(t) {
-  update(t);
-  composer.render();
+  octx.imageSmoothingEnabled = true;
+  octx.imageSmoothingQuality = 'high';
+  for (let i = 0; i < BLUR; i++) {
+    const ts = t + (BLUR > 1 ? (i / (BLUR - 1) - 0.5) : 0) * (0.5 / FPS);
+    // Never blend across the cut between the two worlds.
+    update(t < 9.95 ? Math.min(ts, 9.949) : Math.max(ts, 9.95));
+    composer.render();
+    octx.globalAlpha = 1 / (i + 1);
+    octx.drawImage(renderer.domElement, 0, 0, W, H);
+  }
+  octx.globalAlpha = 1;
   composite(t);
 }
 
 window.preview = (t) => { renderAt(t); return t; };
+window.__dbg = { THREE, plastic, plasticSolid, ringDebris, oceanDebris, wrap, space, ocean };
 // Review aid: renders several moments into one tiled sheet on screen.
 window.sheet = (ts, cols = 3) => {
   const rows = Math.ceil(ts.length / cols);
