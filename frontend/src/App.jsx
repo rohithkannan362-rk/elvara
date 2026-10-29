@@ -10,7 +10,9 @@ import { Applications, Potential, Founders, Enquire } from './components/Closing
 import ProductExperience from './components/ProductExperience';
 import { Vision, Technology, Impact, Operations, Business, Investment, Origin } from './components/Deck';
 import { Strategy } from './components/Deck2';
-import { PlasticCurve, MarketCurve, CashCurves } from './components/Curves';
+import { GlobalPicture, HowItWorks, MarketSizing, CashFlow, Ownership } from './components/Extras';
+import Overview from './components/Overview';
+import { SoilRace, FundsDonut } from './components/Visuals';
 import { initScroll, scrollToId, ScrollTrigger } from './lib/scroll';
 import { applyCss, setAtmosphere } from './lib/atmosphere';
 
@@ -80,9 +82,12 @@ export default function App() {
       <Chrome ready={ready} />
       <main className={ready ? 'is-ready' : ''}>
         <Problem ready={ready} />
+        <Overview ready={ready} />
         <Need ready={ready} />
-        <PlasticCurve ready={ready} />
+        <GlobalPicture ready={ready} />
+        <SoilRace ready={ready} />
         <Solution ready={ready} />
+        <HowItWorks ready={ready} />
         <LivingFilm ready={ready} />
         <Vision ready={ready} />
         <Material ready={ready} />
@@ -93,10 +98,12 @@ export default function App() {
         <Operations ready={ready} />
         <Business ready={ready} />
         <Potential ready={ready} />
-        <MarketCurve ready={ready} />
+        <MarketSizing ready={ready} />
         <Strategy ready={ready} />
         <Investment ready={ready} />
-        <CashCurves ready={ready} />
+        <FundsDonut ready={ready} />
+        <CashFlow ready={ready} />
+        <Ownership ready={ready} />
         <Origin ready={ready} />
         <Founders ready={ready} />
         <Enquire ready={ready} interest={interest} />

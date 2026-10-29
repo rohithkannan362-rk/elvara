@@ -8,8 +8,12 @@ const M = '/media';
 // Every section on the long page, in reading order, for the side index.
 const CHAPTERS = [
   { id: 'problem', label: 'Problem' },
+  { id: 'overview', label: 'At a glance' },
   { id: 'need', label: 'Need' },
+  { id: 'global', label: 'Global picture' },
+  { id: 'soil', label: 'Back to soil' },
   { id: 'solution', label: 'ELVARA' },
+  { id: 'how', label: 'How it works' },
   { id: 'vision', label: 'Vision' },
   { id: 'material', label: 'Material' },
   { id: 'technology', label: 'Technology' },
@@ -18,8 +22,12 @@ const CHAPTERS = [
   { id: 'applications', label: 'Applications' },
   { id: 'operations', label: 'Operations' },
   { id: 'business', label: 'Business' },
+  { id: 'sizing', label: 'Market sizing' },
   { id: 'strategy', label: 'Strategy' },
   { id: 'investment', label: 'Investment' },
+  { id: 'funds', label: 'Use of funds' },
+  { id: 'cashflow', label: 'Cash flow' },
+  { id: 'ownership', label: 'Ownership' },
   { id: 'founders', label: 'Founders' },
   { id: 'enquire', label: 'Enquire' },
 ];
@@ -30,27 +38,27 @@ const GROUPS = [
   {
     id: 'problem', title: 'Our Story', img: `${M}/hub/why.jpg`, kicker: 'Problem, answer & vision',
     line: 'Plastic outlives the food it protects by five centuries. Why ELVARA exists, and where it is going.',
-    secs: [['problem', 'The problem'], ['need', 'The need'], ['solution', 'ELVARA, revealed'], ['vision', 'Vision & mission']],
+    secs: [['problem', 'The problem'], ['overview', 'The case at a glance'], ['need', 'The need'], ['global', 'The global picture'], ['soil', 'Back to soil'], ['solution', 'ELVARA, revealed'], ['how', 'One film, two jobs'], ['vision', 'Vision & mission']],
   },
   {
     id: 'material', title: 'Product & Tech', img: `${M}/img/basic-wrap.jpg`, kicker: 'The material & technology',
     line: 'Agricultural waste, re-engineered into a three-layer living film — and the technology behind it.',
-    secs: [['material', 'Living film'], ['technology', 'Technology & IP'], ['impact', 'Impact']],
+    secs: [['material', 'Living film'], ['technology', 'Technology & IP'], ['impact', 'UN SDG impact']],
   },
   {
     id: 'collection', title: 'Collection', img: `${M}/img/premium-container.jpg`, kicker: '12 products · 3 series',
     line: 'Basic, Niche and Limited Edition — twelve products to spin, pick up and turn in your hand.',
-    secs: [['collection', 'Three series'], ['applications', 'Applications']],
+    secs: [['collection', 'Three series & 3D ring'], ['applications', 'Applications']],
   },
   {
-    id: 'operations', title: 'Business', img: `${M}/img/niche-giftbox.jpg`, kicker: 'Operations, model & strategy',
-    line: 'One material, three revenue engines — built on a plant designed to scale.',
-    secs: [['operations', 'Operations'], ['business', 'Business model'], ['strategy', 'Strategy']],
+    id: 'operations', title: 'Business', img: `${M}/img/niche-giftbox.jpg`, kicker: 'Operations, model, market & strategy',
+    line: 'One material, three revenue engines — entering a market pushed by plastic bans, built on a plant designed to scale.',
+    secs: [['operations', 'Operations'], ['business', 'Business model & pricing'], ['sizing', 'Market sizing'], ['strategy', 'SWOT · PESTLE · Porter']],
   },
   {
-    id: 'investment', title: 'Investment', img: `${M}/img/premium-freshpack.jpg`, kicker: 'The ask & the founders',
-    line: 'The round, the numbers, the risks we have planned for — and the two people behind ELVARA.',
-    secs: [['investment', 'The ask & financials'], ['founders', 'Founders']],
+    id: 'investment', title: 'Investment', img: `${M}/img/premium-freshpack.jpg`, kicker: 'The ask, the numbers & the founders',
+    line: 'The round, full financials, use of funds, cash flow, ownership — and the two people behind ELVARA.',
+    secs: [['investment', 'The ask & financials'], ['funds', 'Use of funds'], ['cashflow', 'Cash flow & break-even'], ['ownership', 'Ownership & terms'], ['founders', 'Founders']],
   },
 ];
 
