@@ -1,54 +1,29 @@
-import { useCallback, useEffect, useLayoutEffect, useState } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 import Environment from './components/Environment';
 import Loader from './components/Loader';
 import { Chrome, Cursor } from './components/Chrome';
-import Menu from './components/Menu';
-import Transition from './components/Transition';
 import Fx from './components/Fx';
-import { Home, ChapterPage, ContactPage } from './components/Pages';
+import { Problem, Need, Solution, Material } from './components/Story';
+import LivingFilm from './components/LivingFilm';
+import Collection from './components/Collection';
+import { Applications, Potential, Founders, Enquire } from './components/Closing';
 import ProductExperience from './components/ProductExperience';
-import { initScroll, getLenis, scrollToId, ScrollTrigger } from './lib/scroll';
+import { Vision, Technology, Impact, Operations, Business, Investment, Origin } from './components/Deck';
+import { Strategy } from './components/Deck2';
+import { initScroll, scrollToId, ScrollTrigger } from './lib/scroll';
 import { applyCss, setAtmosphere } from './lib/atmosphere';
-import { useRoute, go } from './lib/router';
-import { chapterById } from './data/sitemap';
 
 export default function App() {
   const [ready, setReady] = useState(false);
   const [loaderGone, setLoaderGone] = useState(false);
   const [open, setOpen] = useState(null); // { id, origin }
   const [interest, setInterest] = useState('');
-  const [menu, setMenu] = useState(false);
-  const route = useRoute();
-
-  // Six pages: home, the chapters, contact. A second path segment names a
-  // section on the chapter page (#/story/founders); unknown addresses fall
-  // back to the nearest real page.
-  const isContact = route.chapter === 'contact' && !route.sub;
-  const chapter = chapterById[route.chapter];
-  const validSub = chapter?.subs.some((s) => s.id === route.sub);
-  const pageKey = isContact ? 'contact' : chapter ? chapter.id : 'home';
-  useEffect(() => {
-    if (route.chapter && !chapter && !isContact) location.replace('#/');
-    else if (route.sub && !validSub) location.replace(`#/${route.chapter}`);
-  }, [route.path]);
-
-  // A section link within the page that is already open just glides there.
-  useEffect(() => {
-    if (window.__elvaraBuilt && validSub) scrollToId(`sec-${route.sub}`);
-  }, [route.sub]);
 
   useEffect(() => {
     applyCss();
     history.scrollRestoration = 'manual';
     window.scrollTo(0, 0);
   }, []);
-
-  // Every page starts at its top, before its sections measure their triggers.
-  useLayoutEffect(() => {
-    getLenis()?.scrollTo(0, { immediate: true, force: true });
-    window.scrollTo(0, 0);
-    setOpen(null);
-  }, [pageKey]);
 
   useEffect(() => {
     if (!ready) return;
@@ -57,9 +32,9 @@ export default function App() {
     // Created a frame later so the sections' pin spacers already exist.
     let triggers = [];
     const raf = requestAnimationFrame(() => {
-      // Sections nest (a cream showcase inside an emerald page), so on any
-      // change the innermost section still in range wins — leaving a nested
-      // section hands the colours back to the one around it.
+      // Sections nest (the 3D ring inside the collection), so on any change the
+      // innermost section still in range wins — leaving a nested section hands
+      // the colours back to the one around it.
       const settle = () => {
         const live = triggers.filter((t) => t.isActive);
         const pick = live[live.length - 1];
@@ -76,15 +51,11 @@ export default function App() {
       );
       ScrollTrigger.sort();
       ScrollTrigger.refresh();
-      const first = document.querySelector('main [data-atmo]');
-      if (first) setAtmosphere(first.dataset.atmo, 0.8);
-      // Arriving on a section link: start at that section.
-      if (validSub) getLenis()?.scrollTo(`#sec-${route.sub}`, { immediate: true, force: true });
       // All scroll layout is measured: the entrance may now animate freely.
       window.__elvaraBuilt = true;
       dispatchEvent(new Event('elvara:built'));
-      dispatchEvent(new Event('elvara:page'));
     });
+    setAtmosphere('problem', 0.1);
     // Re-measure if anything shifts layout late (e.g. a slow font).
     const remeasure = () => ScrollTrigger.refresh();
     document.fonts?.addEventListener?.('loadingdone', remeasure);
@@ -93,17 +64,11 @@ export default function App() {
       document.fonts?.removeEventListener?.('loadingdone', remeasure);
       triggers.forEach((x) => x.kill());
     };
-  }, [ready, pageKey]);
+  }, [ready]);
 
   const onReveal = useCallback(() => setReady(true), []);
   const onDone = useCallback(() => setLoaderGone(true), []);
   const onOpen = useCallback((id, origin) => setOpen({ id, origin }), []);
-  const closeMenu = useCallback(() => setMenu(false), []);
-
-  let page;
-  if (isContact) page = <ContactPage ready={ready} interest={interest} />;
-  else if (!route.chapter || !chapter) page = <Home ready={ready} onOpen={onOpen} />;
-  else page = <ChapterPage ready={ready} chapterId={chapter.id} onOpen={onOpen} interest={interest} />;
 
   return (
     <>
@@ -111,12 +76,27 @@ export default function App() {
       <div className="grain" aria-hidden="true" />
       {!loaderGone && <Loader onReveal={onReveal} onDone={onDone} />}
       <Cursor />
-      <Chrome ready={ready} route={route} menuOpen={menu} onMenu={() => setMenu((m) => !m)} />
-      <Menu open={menu} onClose={closeMenu} route={route} />
-      <main className={ready ? 'is-ready' : ''} key={pageKey}>
-        {page}
+      <Chrome ready={ready} />
+      <main className={ready ? 'is-ready' : ''}>
+        <Problem ready={ready} />
+        <Need ready={ready} />
+        <Solution ready={ready} />
+        <LivingFilm ready={ready} />
+        <Vision ready={ready} />
+        <Material ready={ready} />
+        <Technology ready={ready} />
+        <Impact ready={ready} />
+        <Collection ready={ready} onOpen={onOpen} />
+        <Applications ready={ready} onOpen={(id) => onOpen(id, null)} />
+        <Operations ready={ready} />
+        <Business ready={ready} />
+        <Potential ready={ready} />
+        <Strategy ready={ready} />
+        <Investment ready={ready} />
+        <Origin ready={ready} />
+        <Founders ready={ready} />
+        <Enquire ready={ready} interest={interest} />
       </main>
-      <Transition />
       <Fx />
       {open && (
         <ProductExperience
@@ -127,7 +107,7 @@ export default function App() {
           onNavigate={(id) => setOpen({ id, origin: null })}
           onEnquire={(name) => {
             setInterest(name);
-            go('/contact', null, 'Business enquiry');
+            requestAnimationFrame(() => scrollToId('enquire'));
           }}
         />
       )}

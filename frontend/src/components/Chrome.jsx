@@ -1,16 +1,66 @@
 import { useEffect, useRef, useState } from 'react';
 import { gsap, ScrollTrigger, scrollToId } from '../lib/scroll';
 import { BRAND } from '../data/content';
-import { chapterById, CONTACT, CHAPTERS } from '../data/sitemap';
-import { go } from '../lib/router';
 import { isOn, onChange as onSoundChange, toggle as toggleSound } from '../lib/sound';
 
-// Fixed header: brand, where you are, sound, enquiry and the menu button,
-// with a hairline of reading progress along the top.
-export function Chrome({ ready, route, menuOpen, onMenu }) {
-  const bar = useRef();
+const M = '/media';
+
+// Every section on the long page, in reading order, for the side index.
+const CHAPTERS = [
+  { id: 'problem', label: 'Problem' },
+  { id: 'need', label: 'Need' },
+  { id: 'solution', label: 'ELVARA' },
+  { id: 'vision', label: 'Vision' },
+  { id: 'material', label: 'Material' },
+  { id: 'technology', label: 'Technology' },
+  { id: 'impact', label: 'Impact' },
+  { id: 'collection', label: 'Collection' },
+  { id: 'applications', label: 'Applications' },
+  { id: 'operations', label: 'Operations' },
+  { id: 'business', label: 'Business' },
+  { id: 'strategy', label: 'Strategy' },
+  { id: 'investment', label: 'Investment' },
+  { id: 'founders', label: 'Founders' },
+  { id: 'enquire', label: 'Enquire' },
+];
+
+// The nav pill groups those sections; each link glides down the page to its
+// group, and its panel lists the sections inside.
+const GROUPS = [
+  {
+    id: 'problem', title: 'Our Story', img: `${M}/hub/why.jpg`, kicker: 'Problem, answer & vision',
+    line: 'Plastic outlives the food it protects by five centuries. Why ELVARA exists, and where it is going.',
+    secs: [['problem', 'The problem'], ['need', 'The need'], ['solution', 'ELVARA, revealed'], ['vision', 'Vision & mission']],
+  },
+  {
+    id: 'material', title: 'Product & Tech', img: `${M}/img/basic-wrap.jpg`, kicker: 'The material & technology',
+    line: 'Agricultural waste, re-engineered into a three-layer living film — and the technology behind it.',
+    secs: [['material', 'Living film'], ['technology', 'Technology & IP'], ['impact', 'Impact']],
+  },
+  {
+    id: 'collection', title: 'Collection', img: `${M}/img/premium-container.jpg`, kicker: '12 products · 3 series',
+    line: 'Basic, Niche and Limited Edition — twelve products to spin, pick up and turn in your hand.',
+    secs: [['collection', 'Three series'], ['applications', 'Applications']],
+  },
+  {
+    id: 'operations', title: 'Business', img: `${M}/img/niche-giftbox.jpg`, kicker: 'Operations, model & strategy',
+    line: 'One material, three revenue engines — built on a plant designed to scale.',
+    secs: [['operations', 'Operations'], ['business', 'Business model'], ['strategy', 'Strategy']],
+  },
+  {
+    id: 'investment', title: 'Investment', img: `${M}/img/premium-freshpack.jpg`, kicker: 'The ask & the founders',
+    line: 'The round, the numbers, the risks we have planned for — and the two people behind ELVARA.',
+    secs: [['investment', 'The ask & financials'], ['founders', 'Founders']],
+  },
+];
+
+// Fixed header (brand, nav pill, current section, sound, enquiry), the side
+// chapter index and a hairline of reading progress.
+export function Chrome({ ready }) {
+  const [active, setActive] = useState('problem');
   const [scrolled, setScrolled] = useState(false);
-  const page = route.chapter === 'contact' ? CONTACT : chapterById[route.chapter];
+  const bar = useRef();
+  const rail = useRef();
 
   useEffect(() => {
     const intro = gsap.fromTo('.chrome > *', { opacity: 0, y: -12 }, { opacity: 1, y: 0, stagger: 0.1, duration: 1.2, ease: 'expo.out', delay: 0.4 });
@@ -26,74 +76,83 @@ export function Chrome({ ready, route, menuOpen, onMenu }) {
 
   useEffect(() => {
     if (!ready) return;
-    let t;
-    // A frame later, so the page's pins already exist.
+    let triggers = [];
+    // Created after the sections' pins exist so positions include pin spacing.
     const id = requestAnimationFrame(() => {
-      t = ScrollTrigger.create({
-        start: 0,
-        end: 'max',
-        refreshPriority: -1,
-        onUpdate: (s) => {
-          const k = `scaleX(${s.progress})`;
-          if (bar.current) bar.current.style.transform = k;
-          // The same reading progress runs along the inside of the nav bar.
-          const n = document.querySelector('.nav__progress i');
-          if (n) n.style.transform = k;
-        },
-      });
+      triggers = CHAPTERS.map(({ id }) =>
+        ScrollTrigger.create({
+          trigger: `#${id}`,
+          start: 'top 55%',
+          end: 'bottom 55%',
+          refreshPriority: -1,
+          onToggle: (s) => s.isActive && setActive(id),
+        })
+      );
+      triggers.push(
+        ScrollTrigger.create({
+          start: 0,
+          end: 'max',
+          refreshPriority: -1,
+          onUpdate: (s) => {
+            if (bar.current) bar.current.style.transform = `scaleX(${s.progress})`;
+            if (rail.current) rail.current.style.transform = `scaleY(${s.progress})`;
+            // The same reading progress runs along the inside of the nav bar.
+            const n = document.querySelector('.nav__progress i');
+            if (n) n.style.transform = `scaleX(${s.progress})`;
+          },
+        })
+      );
     });
     return () => {
       cancelAnimationFrame(id);
-      t?.kill();
+      triggers.forEach((t) => t.kill());
     };
-  }, [ready, route.chapter]);
+  }, [ready]);
+
+  const at = CHAPTERS.findIndex((c) => c.id === active);
 
   return (
     <>
       <span className="progress" aria-hidden="true"><i ref={bar} /></span>
-      <header className={`chrome ${menuOpen ? 'is-menu' : ''} ${scrolled ? 'is-scrolled' : ''}`}>
-        <a className="brand" href="#/" onClick={(e) => { e.preventDefault(); go('/', null, 'Home'); }} aria-label="ELVARA — home" data-cursor="hover">
+      <header className={`chrome ${scrolled ? 'is-scrolled' : ''}`}>
+        <button className="brand" onClick={() => scrollToId('problem')} aria-label="ELVARA — back to start" data-cursor="hover">
           <span className="medallion medallion--sm"><img src={BRAND.logo} alt="" /></span>
           <span className="wordmark">ELVARA</span>
-        </a>
-        <NavBar route={route} />
+        </button>
+        <NavBar active={active} />
         <span className="chrome__chapter" aria-live="polite">
-          {page ? (
-            <>
-              <span className="tnum">{page.no}</span>
-              <span>{page.title}</span>
-            </>
-          ) : (
-            <span>Material innovation showroom</span>
-          )}
+          <span className="tnum">{String(at + 1).padStart(2, '0')}</span>
+          <span>{CHAPTERS[at]?.label}</span>
         </span>
         <div className="chrome__right">
           <SoundToggle />
-          <a className={`nav-cta ${route.chapter === 'contact' ? 'is-current' : ''}`} href="#/contact" onClick={(e) => { e.preventDefault(); go('/contact', e.currentTarget.getBoundingClientRect(), 'Contact'); }} aria-current={route.chapter === 'contact' ? 'page' : undefined} data-cursor="hover">
-            <span className="tnum">{CONTACT.no}</span>
+          <button className={`nav-cta ${active === 'enquire' ? 'is-current' : ''}`} onClick={() => scrollToId('enquire')} data-cursor="hover">
             <span className="nav__roll"><span>Contact</span><span aria-hidden="true">Contact</span></span>
             <i aria-hidden="true">→</i>
-          </a>
-          <button className={`burger ${menuOpen ? 'is-open' : ''}`} onClick={onMenu} aria-expanded={menuOpen} aria-label={menuOpen ? 'Close menu' : 'Open menu'} data-cursor="hover">
-            <span className="burger__label">{menuOpen ? 'Close' : 'Menu'}</span>
-            <span className="burger__icon" aria-hidden="true"><i /><i /></span>
           </button>
         </div>
       </header>
+      <nav className="index" aria-label="Chapters">
+        <span className="index__rail"><i ref={rail} /></span>
+        {CHAPTERS.map((c) => (
+          <button key={c.id} className={`index__item ${active === c.id ? 'is-active' : ''}`} onClick={() => scrollToId(c.id)} data-cursor="hover">
+            <span>{c.label}</span>
+          </button>
+        ))}
+      </nav>
     </>
   );
 }
 
-// Primary navigation: the Collection and the four chapters in a glass pill (Contact
-// stands apart as the last page). A highlight glides to
-// whichever link is pointed at; each chapter opens a panel of its sections.
-function NavBar({ route }) {
+// Primary navigation: the five parts of the page in a glass pill. A highlight
+// glides to whichever link is pointed at and rests on the part being read;
+// each link opens a panel of the sections in that part.
+function NavBar({ active }) {
   const root = useRef();
   const glow = useRef();
   const [open, setOpen] = useState(null);
-  const links = CHAPTERS;
-  const label = (c) => ({ collection: 'Collection', product: 'Product & Tech' })[c.id] || c.title;
   const timer = useRef();
+  const group = GROUPS.find((g) => g.secs.some(([id]) => id === active))?.id;
 
   const moveGlow = (el) => {
     const g = glow.current;
@@ -105,16 +164,15 @@ function NavBar({ route }) {
   };
   const current = () => root.current?.querySelector('.nav__link.is-current');
   useEffect(() => {
-    // Rest the highlight on the current page once fonts have laid out.
-    setOpen(null);
+    if (open) return;
     const id = setTimeout(() => moveGlow(current()), 120);
     return () => clearTimeout(id);
-  }, [route.chapter]);
+  }, [group]);
 
-  const enter = (c) => (e) => {
+  const enter = (g) => (e) => {
     clearTimeout(timer.current);
     moveGlow(e.currentTarget.querySelector('.nav__link'));
-    setOpen(c.subs ? c.id : null);
+    setOpen(g.id);
   };
   const leave = () => {
     timer.current = setTimeout(() => {
@@ -122,50 +180,41 @@ function NavBar({ route }) {
       moveGlow(current());
     }, 180);
   };
-  const toPage = (c) => (e) => {
+  const to = (id) => (e) => {
     e.preventDefault();
     setOpen(null);
-    go(`/${c.id}`, e.currentTarget.getBoundingClientRect(), c.title);
-  };
-  const toSection = (c, s) => (e) => {
-    e.preventDefault();
-    setOpen(null);
-    if (route.chapter === c.id) scrollToId(`sec-${s.id}`);
-    else go(`/${c.id}/${s.id}`, null, s.title);
+    scrollToId(id);
   };
 
   return (
-    <nav className="nav" ref={root} aria-label="Pages" onMouseLeave={leave}>
+    <nav className="nav" ref={root} aria-label="Sections" onMouseLeave={leave}>
       <span className="nav__glow" ref={glow} aria-hidden="true" />
       <span className="nav__progress" aria-hidden="true"><i /></span>
-      {links.map((c) => (
-        <div key={c.id} className={`nav__item ${open === c.id ? 'is-open' : ''}`} onMouseEnter={enter(c)} onFocus={enter(c)}>
-          <a href={`#/${c.id}`} className={`nav__link ${route.chapter === c.id ? 'is-current' : ''}`} onClick={toPage(c)} aria-current={route.chapter === c.id ? 'page' : undefined} data-cursor="hover">
-            <span className="tnum">{c.no}</span>
-            <span className="nav__roll"><span>{label(c)}</span><span aria-hidden="true">{label(c)}</span></span>
-            {c.subs && <i aria-hidden="true">▾</i>}
+      {GROUPS.map((g, i) => (
+        <div key={g.id} className={`nav__item ${open === g.id ? 'is-open' : ''}`} onMouseEnter={enter(g)} onFocus={enter(g)}>
+          <a href={`#${g.id}`} className={`nav__link ${group === g.id ? 'is-current' : ''}`} onClick={to(g.id)} data-cursor="hover">
+            <span className="tnum">{String(i + 1).padStart(2, '0')}</span>
+            <span className="nav__roll"><span>{g.title}</span><span aria-hidden="true">{g.title}</span></span>
+            <i aria-hidden="true">▾</i>
           </a>
-          {c.subs && (
-            <div className="nav__panel" role="group" aria-label={`On ${c.title}`}>
-              <div className="nav__intro">
-                <img src={c.img} alt="" />
-                <p className="eyebrow">{c.kicker}</p>
-                <p>{c.line}</p>
-                <a className="nav__all" href={`#/${c.id}`} onClick={toPage(c)} data-cursor="hover">Open {c.title} <span aria-hidden="true">→</span></a>
-              </div>
-              <ol className="nav__secs">
-                {c.subs.map((s, i) => (
-                  <li key={s.id}>
-                    <a href={`#/${c.id}/${s.id}`} onClick={toSection(c, s)} data-cursor="hover">
-                      <span className="tnum">{String(i + 1).padStart(2, '0')}</span>
-                      <b>{s.title}</b>
-                      <small>{s.line}</small>
-                    </a>
-                  </li>
-                ))}
-              </ol>
+          <div className="nav__panel" role="group" aria-label={`In ${g.title}`}>
+            <div className="nav__intro">
+              <img src={g.img} alt="" />
+              <p className="eyebrow">{g.kicker}</p>
+              <p>{g.line}</p>
+              <a className="nav__all" href={`#${g.id}`} onClick={to(g.id)} data-cursor="hover">Go to {g.title} <span aria-hidden="true">→</span></a>
             </div>
-          )}
+            <ol className="nav__secs">
+              {g.secs.map(([id, title], k) => (
+                <li key={id}>
+                  <a href={`#${id}`} onClick={to(id)} data-cursor="hover">
+                    <span className="tnum">{String(k + 1).padStart(2, '0')}</span>
+                    <b>{title}</b>
+                  </a>
+                </li>
+              ))}
+            </ol>
+          </div>
         </div>
       ))}
     </nav>
