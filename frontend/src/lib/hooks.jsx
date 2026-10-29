@@ -44,6 +44,6 @@ export function useTip() {
 }
 
 
-export const Eyebrow = ({ n, children }) => (
-  <p className="eyebrow"><span className="tnum">{n}</span> {children}</p>
-);
+// Section label. Sections are no longer numbered (the page reads as one story,
+// not a deck), so n is accepted but not shown.
+export const Eyebrow = ({ children }) => <p className="eyebrow">{children}</p>;

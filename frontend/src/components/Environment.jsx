@@ -174,7 +174,7 @@ export default function Environment() {
   }, []);
   return (
     <div className="environment" aria-hidden="true">
-      <Canvas frameloop={covered ? 'never' : 'always'} dpr={[0.6, 0.85]} gl={{ antialias: false, powerPreference: 'high-performance', stencil: false, depth: false }} camera={{ position: [0, 0, 6], fov: 50 }}>
+      <Canvas frameloop={covered ? 'never' : 'always'} dpr={[0.5, 0.65]} gl={{ antialias: false, powerPreference: 'high-performance', stencil: false, depth: false }} camera={{ position: [0, 0, 6], fov: 50 }}>
         <Silk />
         <Fibres />
       </Canvas>

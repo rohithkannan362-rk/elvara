@@ -98,13 +98,13 @@ em { font-style: italic; color: var(--hi); }
 
 .split { display: inline; }
 .w-mask, .c-mask { display: inline-block; overflow: hidden; vertical-align: top; padding-block: 0.12em 0.22em; margin-block: -0.12em -0.22em; padding-inline: 0.02em; margin-inline: -0.02em; }
-.w, .c { display: inline-block; will-change: transform; }
+.w, .c { display: inline-block; }
 
 /* ── Environment layers ───────────────────── */
 .environment { position: fixed; inset: 0; z-index: 0; pointer-events: none; }
 .environment canvas { width: 100% !important; height: 100% !important; }
 .grain {
-  position: fixed; inset: -50%; z-index: 50; pointer-events: none;
+  position: fixed; inset: -8%; z-index: 50; pointer-events: none;
   opacity: var(--grain);
   background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.9' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
   animation: grain 1.2s steps(6) infinite;
@@ -254,7 +254,8 @@ main { position: relative; z-index: 1; }
 /* ── 01 Problem ───────────────────────────── */
 .problem__stage { position: relative; height: 100vh; height: 100svh; overflow: hidden; }
 .problem__filmwrap { position: absolute; inset: 0; }
-.problem__film { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; will-change: transform, filter; transform-origin: center; }
+.problem__film { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; will-change: transform; transform-origin: center; }
+@media (min-width: 821px) { .problem__film { box-shadow: 0 0 0 2px rgba(185, 162, 122, 0.55), 0 60px 140px rgba(0, 0, 0, 0.75); } }
 /* Full-bleed legibility shade for the header; fades away once the film becomes a framed screen. */
 .problem__shade {
   position: absolute; inset: 0; pointer-events: none;
@@ -804,7 +805,6 @@ main { position: relative; z-index: 1; }
 
 /* Vision */
 .vision__quote { margin: 0; max-width: 22ch; font-style: italic; color: var(--fg); }
-.vision__quote .w { will-change: opacity; }
 .mission { list-style: none; margin: 7vh 0 0; padding: 0; display: grid; grid-template-columns: repeat(3, 1fr); gap: 3vw; counter-reset: m; }
 .mission li { border-top: 1px solid var(--line); padding-top: 1.6rem; display: grid; gap: 1rem; }
 .mission .tnum { font: 500 0.66rem/1 var(--sans); letter-spacing: 0.2em; color: var(--hi); }

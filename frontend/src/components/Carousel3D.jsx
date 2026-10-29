@@ -21,7 +21,11 @@ export default function Carousel3D({ ready, onOpen }) {
   useEffect(() => {
     const st = s.current;
     // Wide enough that twelve cards never crowd, however narrow the screen.
-    const radius = () => Math.max(Math.min(innerWidth * 0.38, 600), (items.current[0]?.offsetWidth || 260) * 1.85);
+    // Measured on resize only: reading layout every frame would stall the page.
+    let R = 0;
+    const measure = () => (R = Math.max(Math.min(innerWidth * 0.38, 600), (items.current[0]?.offsetWidth || 260) * 1.85));
+    measure();
+    addEventListener('resize', measure);
     const tick = (_, dt) => {
       dt = Math.min(dt, 50) / 1000;
       if (st.target !== null) {
@@ -35,7 +39,6 @@ export default function Carousel3D({ ready, onOpen }) {
         if (!st.hover && !reducedMotion) st.angle -= 6 * dt; // idle turn
       }
       const a = st.angle + st.scroll;
-      const R = radius();
       ring.current.style.transform = `translateZ(${-R}px) rotateY(${a}deg)`;
       let best = 0;
       let bestDot = -2;
@@ -58,8 +61,23 @@ export default function Carousel3D({ ready, onOpen }) {
         setFront(best);
       }
     };
-    gsap.ticker.add(tick);
-    return () => gsap.ticker.remove(tick);
+    // Only turn while the ring is on screen.
+    let running = false;
+    const io = new IntersectionObserver(([e]) => {
+      if (e.isIntersecting === running) return;
+      running = e.isIntersecting;
+      if (running) {
+        measure();
+        gsap.ticker.add(tick);
+      }
+      else gsap.ticker.remove(tick);
+    }, { rootMargin: '200px' });
+    io.observe(root.current);
+    return () => {
+      io.disconnect();
+      gsap.ticker.remove(tick);
+      removeEventListener('resize', measure);
+    };
   }, []);
 
   // Scrolling past turns the ring a little further.
@@ -146,7 +164,7 @@ export default function Carousel3D({ ready, onOpen }) {
               data-cursor={i === front ? 'Open' : 'hover'}
             >
               <span className="ring3d__card">
-                <img src={x.img} alt="" draggable="false" decoding="async" />
+                <img decoding="async" src={x.img} alt="" draggable="false" decoding="async" />
                 <span className="ring3d__sheen" aria-hidden="true" />
               </span>
             </button>

@@ -40,19 +40,20 @@ export function Problem({ ready }) {
       // Desktop: scale the film into a screen on the right. Phones: the film is
       // portrait-cropped, so crop it to a wide screen at the top instead.
       const screen = wide
-        ? { scale: 0.44, xPercent: 23, borderRadius: 10, boxShadow: '0 0 0 2px rgba(185,162,122,0.55), 0 60px 140px rgba(0,0,0,0.75)' }
+        ? { scale: 0.44, xPercent: 23, borderRadius: 10 }
         : { scale: 1, clipPath: 'inset(15% 5% 47% 5% round 10px)' };
       const from = wide
-        ? { scale: 1.06, xPercent: 0, borderRadius: 0, boxShadow: '0 0 0 0px rgba(185,162,122,0), 0 0 0 0 rgba(0,0,0,0)' }
+        ? { scale: 1.06, xPercent: 0, borderRadius: 0 }
         : { scale: 1, clipPath: 'inset(0% 0% 0% 0% round 0px)' };
       const tl = gsap.timeline({
         scrollTrigger: { trigger: root.current, start: 'top top', end: '+=230%', scrub: 1, pin: '.problem__stage' },
       });
       // Nothing fades to empty at the end: the film and the second headline stay
       // composed and simply scroll away as the next chapter arrives.
-      tl.fromTo('.problem__film',
-        { ...from, filter: 'brightness(0.62)' },
-        { ...screen, filter: 'brightness(0.95)', ease: 'power2.inOut', duration: 1 }, 0)
+      // Only transform-type properties move while scrolling; the gold edge and
+      // shadow are static CSS (off-screen while the film is full-bleed), so the
+      // playing film is never re-painted per frame.
+      tl.fromTo('.problem__film', from, { ...screen, ease: 'power2.inOut', duration: 1 }, 0)
         .to('.problem__shade', { opacity: 0, duration: 0.6 }, 0)
         .to('.problem__hint', { opacity: 0, duration: 0.3 }, 0)
         .fromTo('.problem__label', { opacity: 0, y: 16 }, { opacity: 1, y: 0, duration: 0.4 }, 0.7)
@@ -63,7 +64,17 @@ export function Problem({ ready }) {
         .to('.problem__label', { opacity: 0, duration: 0.3 }, 2.45)
         .to({}, { duration: 0.3 });
     }, root);
-    return () => ctx.revert();
+    // The film only decodes while it can be seen.
+    const io = new IntersectionObserver(([e]) => {
+      if (!v || !window.__elvaraEntered) return;
+      if (e.isIntersecting) v.play().catch(() => {});
+      else v.pause();
+    });
+    io.observe(root.current);
+    return () => {
+      io.disconnect();
+      ctx.revert();
+    };
   }, [ready]);
 
   return (
@@ -80,7 +91,7 @@ export function Problem({ ready }) {
           />
           <span className="problem__shade" aria-hidden="true" />
         </div>
-        <p className="eyebrow problem__eyebrow"><span className="tnum">01</span> The problem</p>
+        <p className="eyebrow problem__eyebrow">The problem</p>
         <div className="problem__copy">
           <h1 className="display problem__h1">
             <Words text="Packaging protects food for days." />
@@ -297,7 +308,7 @@ export function Need({ ready }) {
     <section id="need" className="need" ref={root} data-atmo="night">
       <div className="need__pin">
         <header className="need__head wrap">
-          <p className="eyebrow"><span className="tnum">02</span> The need</p>
+          <p className="eyebrow">The need</p>
           <h2 className="need__title display-sm"><Words text="Two crises. One packaging gap." /></h2>
         </header>
         <div className="need__stats wrap">
@@ -400,7 +411,7 @@ export function Solution({ ready }) {
         <span className="solution__line" aria-hidden="true" />
         <p className="solution__kicker eyebrow"><Chars text="03 — Our proposed solution" /></p>
         <div className="solution__halo" aria-hidden="true" />
-        <div className="solution__medallion medallion medallion--xl"><img src={BRAND.logo} alt="ELVARA logo" /></div>
+        <div className="solution__medallion medallion medallion--xl"><img decoding="async" src={BRAND.logo} alt="ELVARA logo" /></div>
         <h2 className="solution__word wordmark">ELVARA</h2>
         <div className="solution__after">
           <p className="solution__claim display-sm"><Words text="One film. Two jobs." /></p>
@@ -529,7 +540,7 @@ export function Material({ ready }) {
   return (
     <section id="material" className="material" ref={root} data-atmo="olive">
       <div className="material__intro wrap">
-        <p className="eyebrow"><span className="tnum">05</span> Material innovation</p>
+        <p className="eyebrow">Material innovation</p>
         <h2 className="display-sm"><Words text="Agricultural waste, re-engineered into a living film." /></h2>
         <p className="lede">Lignin and cellulose recovered from agro-waste streams — tree bark, fruit peel, mill residue — are formulated into nanoparticles and cast into a film that rivals plastic, then returns to the soil.</p>
       </div>
@@ -579,7 +590,7 @@ export function Material({ ready }) {
           <div className="indicator__stage">
             <span className="indicator__halo" aria-hidden="true" />
             <div className="indicator__pack">
-              <img src={FRESHPACK.img} alt="ELVARA freshness-indicator pack with salmon" />
+              <img decoding="async" src={FRESHPACK.img} alt="ELVARA freshness-indicator pack with salmon" />
               <span className="indicator__sheen" aria-hidden="true" />
             </div>
             <div className="indicator__lens" aria-hidden="true">

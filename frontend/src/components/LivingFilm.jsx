@@ -309,7 +309,7 @@ export default function LivingFilm({ ready }) {
   };
 
   return (
-    <section className="living wrap" ref={root} data-atmo="emerald">
+    <section id="living" className="living wrap" ref={root} data-atmo="emerald">
       <div className="living__copy">
         <p className="eyebrow">Hold the material</p>
         <h2 className="display-lg"><Words text="A living film," /> <em><Words text="in your hands." /></em></h2>

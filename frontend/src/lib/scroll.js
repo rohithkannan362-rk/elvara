@@ -3,6 +3,9 @@ import { ScrollTrigger } from 'gsap/ScrollTrigger';
 import Lenis from 'lenis';
 
 gsap.registerPlugin(ScrollTrigger);
+// Shared reveal helpers target optional parts (not every section has every
+// element); skip the hundreds of 'target not found' warnings that causes.
+gsap.config({ nullTargetWarn: false });
 // Mobile address bars resize the viewport while scrolling; don't re-measure pins for that.
 ScrollTrigger.config({ ignoreMobileResize: true });
 

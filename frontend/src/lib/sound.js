@@ -3,8 +3,12 @@
 //   · a warm, chorused pad moving through Dmaj9 → Bm11 → Gmaj7♯11 → A6/9
 //   · a glassy FM "celesta" arpeggio wandering over the chord, ping-pong echoed
 //   · a soft sub-bass, a high shimmer and a breath of filtered air
-// All of it sits in a long hall reverb. Audio only starts from a visitor's
-// gesture (the Sound toggle) and remembers their choice.
+// All of it sits in a long hall reverb. The score is on by default and
+// remembers a visitor's choice. It is only ever audible while the page is
+// actually being looked at: a hidden tab or minimised window stays silent,
+// and the music starts (or resumes) the moment the page is in view. Where the
+// browser holds audio until a first gesture, that first click or key only
+// unlocks it — it never counts as switching the sound off.
 
 const TRACK = '/media/audio/ambient.mp3';
 const PREF = 'elvara-sound';
@@ -22,11 +26,15 @@ const CHORDS = [
 ];
 
 let ctx, master, bus, verbIn, delayIn, timer, mediaEl, on = false;
+// audible: the score is actually sounding (on, unlocked and the page in view).
+let audible = false, justUnlocked = false, armed = false;
 let step = 0, nextTime = 0, chordIdx = 0, arpPos = 0;
 const listeners = new Set();
-const emit = () => listeners.forEach((f) => f(on));
+const emit = () => listeners.forEach((f) => f(on, audible));
 
 export const isOn = () => on;
+export const isAudible = () => audible;
+const pageHidden = () => typeof document !== 'undefined' && document.hidden;
 export const onChange = (f) => (listeners.add(f), () => listeners.delete(f));
 
 function writePref(v) {
@@ -279,22 +287,46 @@ export async function start() {
       ctx.createMediaElementSource(mediaEl).connect(master);
     }
   }
+  await wake();
+}
+
+// Bring the score up — only if it is wanted and the page is in view.
+async function wake() {
+  if (!on || !ctx) return;
+  if (pageHidden()) {
+    ctx.suspend().catch(() => {});
+    return; // visibilitychange calls wake() again when the page is shown
+  }
   await ctx.resume().catch(() => {});
+  if (!on || pageHidden()) return;
   // Browsers keep audio suspended until a visitor interacts; start on the first one.
-  if (ctx.state !== 'running') armUnlock();
+  if (ctx.state !== 'running') {
+    armUnlock();
+    setAudible(false);
+    return;
+  }
   if (mediaEl) mediaEl.play().catch(() => {});
   else if (!timer) {
     nextTime = ctx.currentTime + 0.1;
     timer = setInterval(scheduler, 90);
   }
+  nextTime = Math.max(nextTime, ctx.currentTime + 0.05);
   master.gain.cancelScheduledValues(ctx.currentTime);
   master.gain.setValueAtTime(master.gain.value, ctx.currentTime);
   master.gain.linearRampToValueAtTime(VOLUME, ctx.currentTime + 4);
+  setAudible(true);
+}
+
+function setAudible(v) {
+  if (audible === v) return;
+  audible = v;
+  emit();
 }
 
 export function stop() {
   if (!on) return;
   on = false;
+  audible = false;
   writePref(false);
   emit();
   if (!ctx) return;
@@ -311,7 +343,12 @@ export function stop() {
   }, 1500);
 }
 
-export const toggle = () => (on ? stop() : start());
+// The click that unlocked audio was the visitor asking for sound, not
+// switching it off; likewise a press while it is still waiting to sound.
+export const toggle = () => {
+  if (on && (justUnlocked || !audible)) return wake();
+  return on ? stop() : start();
+};
 
 // Dip the score while a product film is being explored.
 export function duck(amount = 0.45) {
@@ -330,14 +367,16 @@ export function unduck() {
 }
 
 function armUnlock() {
+  if (armed) return;
+  armed = true;
   const events = ['pointerdown', 'keydown', 'touchstart'];
   const go = () => {
     events.forEach((e) => removeEventListener(e, go, true));
+    armed = false;
     if (!on || !ctx) return;
-    ctx.resume().then(() => {
-      nextTime = Math.max(nextTime, ctx.currentTime + 0.05);
-    });
-    mediaEl?.play().catch(() => {});
+    justUnlocked = true;
+    setTimeout(() => (justUnlocked = false), 700);
+    wake();
   };
   events.forEach((e) => addEventListener(e, go, { capture: true, passive: true }));
 }
@@ -353,14 +392,15 @@ export function autoStart() {
 }
 
 if (typeof document !== 'undefined') {
+  // Silent whenever the page is out of sight; back as soon as it is shown.
   document.addEventListener('visibilitychange', () => {
     if (!ctx || !on) return;
-    if (document.hidden) ctx.suspend();
-    else {
-      ctx.resume();
-      nextTime = Math.max(nextTime, ctx.currentTime + 0.05);
-    }
+    if (document.hidden) {
+      ctx.suspend().catch(() => {});
+      mediaEl?.pause();
+      setAudible(false);
+    } else wake();
   });
 }
 
-if (import.meta.env?.DEV && typeof window !== 'undefined') window.__soundState = () => ({ on, ctx: ctx?.state ?? 'none' });
+if (import.meta.env?.DEV && typeof window !== 'undefined') window.__soundState = () => ({ on, audible, ctx: ctx?.state ?? 'none', hidden: document.hidden });

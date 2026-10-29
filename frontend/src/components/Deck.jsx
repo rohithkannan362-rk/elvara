@@ -426,7 +426,7 @@ export function Origin({ ready }) {
     });
   });
   return (
-    <section className="deck origin" ref={root} data-atmo="night">
+    <section id="origin" className="deck origin" ref={root} data-atmo="night">
       <div className="wrap origin__wrap">
         <div className="origin__head">
           <p className="eyebrow">Our story</p>

@@ -35,7 +35,7 @@ function ProductObject({ p, i, onOpen }) {
     >
       <span className="object__body">
         <span className="object__shadow" aria-hidden="true" />
-        <img src={p.img} alt={p.name} draggable="false" decoding="async" />
+        <img decoding="async" src={p.img} alt={p.name} draggable="false" decoding="async" />
         <span className="object__sheen" aria-hidden="true" />
       </span>
       <span className="object__meta">
@@ -92,7 +92,7 @@ export default function Collection({ ready, onOpen }) {
   return (
     <section id="collection" className="collection" ref={root}>
       <div className="collection__intro wrap" data-atmo="cream">
-        <p className="eyebrow"><span className="tnum">08</span> The collection</p>
+        <p className="eyebrow">The collection</p>
         <h2 className="display-xl"><Chars text="Three series." /><br /><em><Chars text="One material." /></em></h2>
         <p className="collection__motto wordmark">{BRAND.motto}</p>
         <p className="collection__sub lede">Twelve products in three series. Choose one to inspect it — scroll to open it, turn it and move in close enough to see the fibres.</p>

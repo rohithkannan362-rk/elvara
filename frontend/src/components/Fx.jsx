@@ -1,10 +1,9 @@
 import { useEffect, useRef } from 'react';
-import { gsap, ScrollTrigger, reducedMotion } from '../lib/scroll';
+import { gsap, reducedMotion } from '../lib/scroll';
 
 // Site-wide finishing touches, mounted once:
 //  · a trail of golden spores that drift off the cursor and fade,
 //  · magnetic buttons that lean toward the pointer and spring back,
-//  · "liquid" scroll — cards and media lean with scroll speed, then settle.
 const MAGNETIC = '.pill, .nav-cta, .nav__link, .dock__btn, .burger, .sound, .link-cta, .portal__arrow, .menu__arrow, .px__next, .px__enquire, .enquire__send';
 
 export default function Fx() {
@@ -102,30 +101,6 @@ export default function Fx() {
     };
     addEventListener('pointermove', move, { passive: true });
     return () => removeEventListener('pointermove', move);
-  }, []);
-
-  // Liquid scroll: scroll speed becomes a slight lean, eased back to rest.
-  useEffect(() => {
-    if (reducedMotion) return;
-    const root = document.documentElement;
-    const o = { skew: 0 };
-    const set = () => root.style.setProperty('--skew', `${o.skew.toFixed(3)}deg`);
-    const st = ScrollTrigger.create({
-      start: 0,
-      end: 'max',
-      onUpdate: (s) => {
-        const target = gsap.utils.clamp(-3.5, 3.5, s.getVelocity() / -450);
-        if (Math.abs(target) > Math.abs(o.skew)) {
-          o.skew = target;
-          set();
-          gsap.to(o, { skew: 0, duration: 0.9, ease: 'power3.out', overwrite: true, onUpdate: set });
-        }
-      },
-    });
-    return () => {
-      st.kill();
-      root.style.removeProperty('--skew');
-    };
   }, []);
 
   return <canvas ref={canvas} className="trail" aria-hidden="true" />;

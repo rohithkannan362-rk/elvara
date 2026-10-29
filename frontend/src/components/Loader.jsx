@@ -146,7 +146,7 @@ export default function Loader({ onReveal, onDone }) {
       <span className="loader__flash" aria-hidden="true" />
       <div className="loader__center">
         <div className="loader__mark medallion">
-          <img src={BRAND.logo} alt="ELVARA logo" />
+          <img decoding="async" src={BRAND.logo} alt="ELVARA logo" />
         </div>
         <h1 className="loader__word wordmark">
           <Chars text="ELVARA" />

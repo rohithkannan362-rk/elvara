@@ -32,7 +32,7 @@ export function Applications({ ready, onOpen }) {
   return (
     <section id="applications" className="apps" ref={root} data-atmo="emerald">
       <div className="apps__head wrap">
-        <p className="eyebrow"><span className="tnum">09</span> Applications</p>
+        <p className="eyebrow">Applications</p>
         <h2 className="display-md"><Words text="Wherever packaging meets food, health or a brand." /></h2>
       </div>
       <div className="apps__body wrap">
@@ -78,7 +78,7 @@ export function Potential({ ready }) {
   }, [ready]);
 
   return (
-    <section className="potential" ref={root} data-atmo="olive">
+    <section id="market" className="potential" ref={root} data-atmo="olive">
       <div className="market wrap">
         <div className="market__copy">
           <p className="eyebrow">Business potential</p>
@@ -143,7 +143,7 @@ export function Founders({ ready }) {
   return (
     <section id="founders" className="founders" ref={root} data-atmo="night">
       <div className="founders__head wrap">
-        <p className="eyebrow"><span className="tnum">14</span> Founders</p>
+        <p className="eyebrow">Founders</p>
         <h2 className="display-md"><Words text="It began with a waste-stream question at a lab bench." /></h2>
         <p className="lede">Tons of bark, peel and lignin residue with nowhere to go — and a dairy co-operative losing stock to spoilage. ELVARA was founded to answer both with one material.</p>
       </div>
@@ -154,7 +154,7 @@ export function Founders({ ready }) {
               <span className="founder__border" aria-hidden="true" />
               <div className="founder__photo">
                 <div className="founder__zoom" style={{ transform: `scale(${f.zoom || 1})`, transformOrigin: f.origin || '50% 30%' }}>
-                  <img src={f.img} alt={`${f.name}, ${f.role} of ELVARA`} style={{ objectPosition: f.focus }} />
+                  <img decoding="async" src={f.img} alt={`${f.name}, ${f.role} of ELVARA`} style={{ objectPosition: f.focus }} />
                 </div>
                 <span className="founder__shade" aria-hidden="true" />
               </div>
@@ -215,7 +215,7 @@ export function Enquire({ ready, interest }) {
   return (
     <section id="enquire" className="enquire" ref={root} data-atmo="emerald">
       <div className="wrap">
-        <p className="eyebrow"><span className="tnum">15</span> Business enquiry</p>
+        <p className="eyebrow">Business enquiry</p>
         <h2 className="enquire__claim display-lg"><Words text="Let's build packaging that protects food —" /> <em><Words text="and returns to the earth." /></em></h2>
         <form className="enquire__form" onSubmit={submit}>
           <div className="chips" role="radiogroup" aria-label="Enquiry type">
@@ -241,7 +241,7 @@ export function Enquire({ ready, interest }) {
       </div>
       <footer className="footer wrap">
         <div className="footer__brand">
-          <span className="medallion medallion--sm"><img src={BRAND.logo} alt="" /></span>
+          <span className="medallion medallion--sm"><img decoding="async" src={BRAND.logo} alt="" /></span>
           <span className="wordmark">ELVARA</span>
         </div>
         <a href={`mailto:${BRAND.email}`} data-cursor="hover">{BRAND.email}</a>

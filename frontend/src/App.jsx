@@ -3,6 +3,7 @@ import Environment from './components/Environment';
 import Loader from './components/Loader';
 import { Chrome, Cursor } from './components/Chrome';
 import Fx from './components/Fx';
+import Safe from './components/Safe';
 import { Problem, Need, Solution, Material } from './components/Story';
 import LivingFilm from './components/LivingFilm';
 import Collection from './components/Collection';
@@ -75,41 +76,51 @@ export default function App() {
 
   return (
     <>
-      <Environment />
+      <Safe name="environment" fallback={<div className="environment" aria-hidden="true" />}>
+        <Environment />
+      </Safe>
       <div className="grain" aria-hidden="true" />
       {!loaderGone && <Loader onReveal={onReveal} onDone={onDone} />}
       <Cursor />
       <Chrome ready={ready} />
       <main className={ready ? 'is-ready' : ''}>
-        <Problem ready={ready} />
-        <Overview ready={ready} />
-        <Need ready={ready} />
-        <GlobalPicture ready={ready} />
-        <SoilRace ready={ready} />
-        <Solution ready={ready} />
-        <HowItWorks ready={ready} />
-        <LivingFilm ready={ready} />
-        <Vision ready={ready} />
-        <Material ready={ready} />
-        <Technology ready={ready} />
-        <Impact ready={ready} />
-        <Collection ready={ready} onOpen={onOpen} />
-        <Applications ready={ready} onOpen={(id) => onOpen(id, null)} />
-        <Operations ready={ready} />
-        <Business ready={ready} />
-        <Potential ready={ready} />
-        <MarketSizing ready={ready} />
-        <Strategy ready={ready} />
-        <Investment ready={ready} />
-        <FundsDonut ready={ready} />
-        <CashFlow ready={ready} />
-        <Ownership ready={ready} />
-        <Origin ready={ready} />
-        <Founders ready={ready} />
-        <Enquire ready={ready} interest={interest} />
+        {/* I · Why it matters — the problem, felt before it is explained */}
+        <Safe name="problem"><Problem ready={ready} /></Safe>
+        <Safe name="need"><Need ready={ready} /></Safe>
+        <Safe name="global"><GlobalPicture ready={ready} /></Safe>
+        {/* II · The answer — ELVARA revealed, then held, then explained */}
+        <Safe name="solution"><Solution ready={ready} /></Safe>
+        <Safe name="soil"><SoilRace ready={ready} /></Safe>
+        <Safe name="living"><LivingFilm ready={ready} /></Safe>
+        <Safe name="how"><HowItWorks ready={ready} /></Safe>
+        <Safe name="material"><Material ready={ready} /></Safe>
+        <Safe name="technology"><Technology ready={ready} /></Safe>
+        {/* III · The products */}
+        <Safe name="collection"><Collection ready={ready} onOpen={onOpen} /></Safe>
+        <Safe name="applications"><Applications ready={ready} onOpen={(id) => onOpen(id, null)} /></Safe>
+        {/* IV · The impact and where it leads */}
+        <Safe name="impact"><Impact ready={ready} /></Safe>
+        <Safe name="vision"><Vision ready={ready} /></Safe>
+        {/* V · The business — market first, then how ELVARA wins it */}
+        <Safe name="market"><Potential ready={ready} /></Safe>
+        <Safe name="sizing"><MarketSizing ready={ready} /></Safe>
+        <Safe name="business"><Business ready={ready} /></Safe>
+        <Safe name="strategy"><Strategy ready={ready} /></Safe>
+        <Safe name="operations"><Operations ready={ready} /></Safe>
+        {/* VI · The investment — the case at a glance, then every number */}
+        <Safe name="overview"><Overview ready={ready} /></Safe>
+        <Safe name="investment"><Investment ready={ready} /></Safe>
+        <Safe name="funds"><FundsDonut ready={ready} /></Safe>
+        <Safe name="cashflow"><CashFlow ready={ready} /></Safe>
+        <Safe name="ownership"><Ownership ready={ready} /></Safe>
+        {/* VII · The people, and the conversation */}
+        <Safe name="origin"><Origin ready={ready} /></Safe>
+        <Safe name="founders"><Founders ready={ready} /></Safe>
+        <Safe name="enquire"><Enquire ready={ready} interest={interest} /></Safe>
       </main>
       <Fx />
       {open && (
+        <Safe name="product view">
         <ProductExperience
           key="px"
           productId={open.id}
@@ -121,6 +132,7 @@ export default function App() {
             requestAnimationFrame(() => scrollToId('enquire'));
           }}
         />
+        </Safe>
       )}
     </>
   );

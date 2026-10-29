@@ -322,7 +322,7 @@ export default function ProductExperience({ productId, origin, onClose, onNaviga
           <button className="px__next" onClick={() => onNavigate(next.id)} data-cursor="Next">
             <span className="eyebrow">Next object</span>
             <span>{next.name}</span>
-            <span className="px__chip"><img src={next.img} alt="" /></span>
+            <span className="px__chip"><img decoding="async" src={next.img} alt="" /></span>
           </button>
         </div>
       </div>
