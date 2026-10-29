@@ -10,6 +10,7 @@ import { Applications, Potential, Founders, Enquire } from './components/Closing
 import ProductExperience from './components/ProductExperience';
 import { Vision, Technology, Impact, Operations, Business, Investment, Origin } from './components/Deck';
 import { Strategy } from './components/Deck2';
+import { PlasticCurve, MarketCurve, CashCurves } from './components/Curves';
 import { initScroll, scrollToId, ScrollTrigger } from './lib/scroll';
 import { applyCss, setAtmosphere } from './lib/atmosphere';
 
@@ -80,6 +81,7 @@ export default function App() {
       <main className={ready ? 'is-ready' : ''}>
         <Problem ready={ready} />
         <Need ready={ready} />
+        <PlasticCurve ready={ready} />
         <Solution ready={ready} />
         <LivingFilm ready={ready} />
         <Vision ready={ready} />
@@ -91,8 +93,10 @@ export default function App() {
         <Operations ready={ready} />
         <Business ready={ready} />
         <Potential ready={ready} />
+        <MarketCurve ready={ready} />
         <Strategy ready={ready} />
         <Investment ready={ready} />
+        <CashCurves ready={ready} />
         <Origin ready={ready} />
         <Founders ready={ready} />
         <Enquire ready={ready} interest={interest} />
