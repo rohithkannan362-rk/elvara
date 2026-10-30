@@ -7,6 +7,7 @@ import { sampleEdge, sampleAccent } from '../lib/frames';
 // Scrub copies of the films (see scripts/encode-scrub.mjs) seek in ~3 ms.
 const scrubSrc = (src) => src.replace('/vid/', '/scrub/');
 import { duck, unduck } from '../lib/sound';
+import { warmProduct } from '../lib/preload';
 
 const rgb = ({ r, g, b }, a = 1) => `rgba(${r | 0}, ${g | 0}, ${b | 0}, ${a})`;
 const lum = ({ r, g, b }) => (0.2126 * r + 0.7152 * g + 0.0722 * b) / 255;
@@ -42,8 +43,8 @@ export default function ProductExperience({ productId, origin, onClose, onNaviga
       const from = origin
         ? `circle(${Math.hypot(origin.width, origin.height) / 2}px at ${origin.left + origin.width / 2}px ${origin.top + origin.height / 2}px)`
         : 'circle(0% at 50% 50%)';
-      gsap.fromTo(root.current, { clipPath: from }, { clipPath: `circle(150% at 50% 50%)`, duration: 1.4, ease: 'expo.inOut' });
-      gsap.from('.px__ui > *', { opacity: 0, y: 24, stagger: 0.08, duration: 1.2, ease: 'expo.out', delay: 0.7 });
+      gsap.fromTo(root.current, { clipPath: from }, { clipPath: `circle(150% at 50% 50%)`, duration: 0.7, ease: 'expo.out' });
+      gsap.from('.px__ui > *', { opacity: 0, y: 24, stagger: 0.05, duration: 0.8, ease: 'expo.out', delay: 0.25 });
     }, root);
     return () => ctx.revert();
   }, []);
@@ -58,7 +59,8 @@ export default function ProductExperience({ productId, origin, onClose, onNaviga
     const paused = [...document.querySelectorAll('main video')].filter((v) => !v.paused);
     paused.forEach((v) => v.pause());
     document.documentElement.classList.add('is-locked');
-    const lenis = new Lenis({ wrapper: scroller.current, content: track.current, lerp: 0.1, smoothWheel: true, wheelMultiplier: 0.85 });
+    // A short track and a lively wheel: a couple of flicks turn the whole product.
+    const lenis = new Lenis({ wrapper: scroller.current, content: track.current, lerp: 0.14, smoothWheel: true, wheelMultiplier: 1.3, touchMultiplier: 1.6 });
     lenis.on('scroll', (e) => {
       state.current.p = e.limit ? e.scroll / e.limit : 0;
     });
@@ -105,6 +107,12 @@ export default function ProductExperience({ productId, origin, onClose, onNaviga
       paused.forEach((v) => v.play().catch(() => {}));
     };
   }, []);
+
+  // Neighbours load in the background so the arrows switch instantly.
+  useEffect(() => {
+    warmProduct(next.id);
+    warmProduct(prev.id);
+  }, [productId]);
 
   // Reset when moving to another product.
   useEffect(() => {
@@ -170,7 +178,7 @@ export default function ProductExperience({ productId, origin, onClose, onNaviga
     const tick = () => {
       const s = state.current;
       // Lenis already smooths the scroll; this light follow only removes stepping.
-      s.sp += (s.p - s.sp) * 0.24;
+      s.sp += (s.p - s.sp) * 0.35;
       if (Math.abs(s.p - s.sp) < 0.0002) s.sp = s.p;
       s.smx += (s.mx - s.smx) * 0.05;
       s.smy += (s.my - s.smy) * 0.05;
@@ -213,7 +221,7 @@ export default function ProductExperience({ productId, origin, onClose, onNaviga
     const el = root.current.querySelector(`.px__info[data-seg="${seg}"]`);
     if (!el) return;
     const tl = gsap.timeline();
-    tl.fromTo(el.querySelectorAll('.px__line'), { yPercent: 100, opacity: 0 }, { yPercent: 0, opacity: 1, stagger: 0.09, duration: 1, ease: 'expo.out' });
+    tl.fromTo(el.querySelectorAll('.px__line'), { yPercent: 100, opacity: 0 }, { yPercent: 0, opacity: 1, stagger: 0.05, duration: 0.6, ease: 'expo.out' });
     return () => tl.kill();
   }, [seg, productId]);
 
@@ -238,7 +246,7 @@ export default function ProductExperience({ productId, origin, onClose, onNaviga
 
   const close = (after) =>
     gsap.to(root.current, {
-      clipPath: 'circle(0% at 50% 50%)', duration: 1, ease: 'expo.inOut',
+      clipPath: 'circle(0% at 50% 50%)', duration: 0.55, ease: 'expo.in',
       onComplete: () => (onClose(), after?.()),
     });
 

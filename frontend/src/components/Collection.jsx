@@ -3,6 +3,7 @@ import { gsap } from '../lib/scroll';
 import { CATEGORIES, BRAND } from '../data/content';
 import { Words, Chars } from '../lib/Split';
 import Carousel3D from './Carousel3D';
+import { warmProduct } from '../lib/preload';
 
 // Pointer tilt + moving sheen on a product object.
 function useTilt() {
@@ -28,6 +29,8 @@ function ProductObject({ p, i, onOpen }) {
     <button
       className={`object object--${i}`}
       onClick={(e) => onOpen(p.id, e.currentTarget.querySelector('img').getBoundingClientRect())}
+      onPointerEnter={() => warmProduct(p.id)}
+      onFocus={() => warmProduct(p.id)}
       data-cursor="Explore"
       data-speed={[0.04, -0.03, 0.05, -0.02][i]}
       aria-label={`Explore ${p.name}`}

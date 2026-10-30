@@ -2,6 +2,7 @@ import { useEffect, useRef, useState } from 'react';
 import { gsap, ScrollTrigger } from '../lib/scroll';
 import { APPLICATIONS, ALL_PRODUCTS, MARKET, ROADMAP, FOUNDERS, BRAND } from '../data/content';
 import { Words } from '../lib/Split';
+import { warmProduct } from '../lib/preload';
 
 const byId = Object.fromEntries(ALL_PRODUCTS.map((p) => [p.id, p]));
 
@@ -39,7 +40,7 @@ export function Applications({ ready, onOpen }) {
         <ol className="apps__list">
           {APPLICATIONS.map((a, i) => (
             <li key={a.name} className={`app ${i === active ? 'is-active' : ''}`}>
-              <button onMouseEnter={() => setActive(i)} onFocus={() => setActive(i)} onClick={() => onOpen(a.product)} data-cursor="Explore">
+              <button onMouseEnter={() => (setActive(i), warmProduct(a.product))} onFocus={() => (setActive(i), warmProduct(a.product))} onClick={() => onOpen(a.product)} data-cursor="Explore">
                 <span className="tnum">{String(i + 1).padStart(2, '0')}</span>
                 <span className="app__name">{a.name}</span>
                 <span className="app__note">{a.note}</span>

@@ -1,6 +1,7 @@
 import { useEffect, useRef, useState } from 'react';
 import { gsap, ScrollTrigger, reducedMotion } from '../lib/scroll';
 import { ALL_PRODUCTS, CATEGORIES } from '../data/content';
+import { warmProduct } from '../lib/preload';
 
 const N = ALL_PRODUCTS.length;
 const STEP = 360 / N;
@@ -59,6 +60,7 @@ export default function Carousel3D({ ready, onOpen }) {
       if (best !== frontRef.current) {
         frontRef.current = best;
         setFront(best);
+        warmProduct(ALL_PRODUCTS[best].id);
       }
     };
     // Only turn while the ring is on screen.

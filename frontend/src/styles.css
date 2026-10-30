@@ -736,7 +736,7 @@ main { position: relative; z-index: 1; }
 }
 .px__scroller { position: absolute; inset: 0; overflow-y: auto; overscroll-behavior: contain; scrollbar-width: none; outline: none; z-index: 1; }
 .px__scroller::-webkit-scrollbar { display: none; }
-.px__track { height: 800vh; }
+.px__track { height: 300vh; }
 .px__ui { position: absolute; inset: 0; z-index: 2; pointer-events: none; }
 .px__ui button, .px__ui a { pointer-events: auto; }
 .px__top { position: absolute; top: 0; left: 0; right: 0; display: flex; justify-content: space-between; align-items: center; padding: clamp(14px, 2.4vh, 26px) var(--gutter); }

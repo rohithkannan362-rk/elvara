@@ -12,6 +12,10 @@ import { autoStart as autoStartSound } from '../lib/sound';
 const FILM = '/media/intro/entrance.mp4';
 const POSTER = '/media/intro/entrance-poster.jpg';
 const EXIT_AT = 6.2; // film time (s) when light starts breaking through
+// The whole entrance lasts about five seconds: the film runs at double speed
+// (light breaks through ~3.1 s in) and the exit takes ~1.9 s.
+const RATE = 2;
+const EXIT_PACE = 0.45;
 const reducedMotion = typeof window !== 'undefined' && matchMedia('(prefers-reduced-motion: reduce)').matches;
 
 export default function Loader({ onReveal, onDone }) {
@@ -61,7 +65,7 @@ export default function Loader({ onReveal, onDone }) {
         gsap.to('.loader__word .c', { yPercent: 0, stagger: 0.07, duration: 1.2, ease: 'expo.out' });
         gsap.to(['.loader__motto', '.loader__meta', '.loader__skip'], { opacity: 1, duration: 1, delay: 0.5, stagger: 0.1 });
         // A slow camera drift that continues the film's own push.
-        gsap.to('.loader__film', { scale: 1.08, duration: 9, ease: 'none' });
+        gsap.to('.loader__film', { scale: 1.08, duration: 4, ease: 'none' });
       });
     const onBuilt = () => later(intro, 60);
     if (window.__elvaraBuilt) onBuilt();
@@ -86,7 +90,7 @@ export default function Loader({ onReveal, onDone }) {
           tl.add(announce, 0).to(root.current, { opacity: 0, duration: 0.8 }, 0);
           return;
         }
-        const k = quick ? 0.55 : 1;
+        const k = quick ? 0.3 : EXIT_PACE;
         // Hand the mark from its CSS breathing to the timeline.
         tl.set('.loader__mark', { animation: 'none', opacity: 1, scale: 1 }, 0)
           .to(['.loader__meta', '.loader__motto', '.loader__skip'], { opacity: 0, duration: 0.6 * k }, 0)
@@ -117,10 +121,12 @@ export default function Loader({ onReveal, onDone }) {
       v.pause();
       later(() => exit(), 2200);
     } else {
-      v.play().catch(() => later(() => exit(), 3200));
-      later(() => v.currentTime < 0.1 && exit(), 6000); // never stalled
+      v.defaultPlaybackRate = RATE;
+      v.playbackRate = RATE;
+      v.play().catch(() => later(() => exit(), 2000));
+      later(() => v.currentTime < 0.1 && exit(), 3000); // never stalled
     }
-    later(() => exit(), 14000); // hard cap, whatever the network does
+    later(() => exit(), 6000); // hard cap, whatever the network does
 
     return () => {
       timers.forEach(clearTimeout);
