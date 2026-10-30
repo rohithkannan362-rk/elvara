@@ -409,7 +409,7 @@ export function Solution({ ready }) {
     <section id="solution" className="solution" ref={root} data-atmo="emerald">
       <div className="solution__stage">
         <span className="solution__line" aria-hidden="true" />
-        <p className="solution__kicker eyebrow"><Chars text="03 — Our proposed solution" /></p>
+        <p className="solution__kicker eyebrow"><Chars text="Our proposed solution" /></p>
         <div className="solution__halo" aria-hidden="true" />
         <div className="solution__medallion medallion medallion--xl"><img decoding="async" src={BRAND.logo} alt="ELVARA logo" /></div>
         <h2 className="solution__word wordmark">ELVARA</h2>
@@ -468,9 +468,11 @@ export function Material({ ready }) {
       const tl = gsap.timeline({
         scrollTrigger: { trigger: '.film', start: 'top top', end: '+=260%', scrub: 1, pin: true },
       });
+      // Phones get a tighter explosion so the layers stay inside their own area.
+      const spread = innerWidth > 820 ? 170 : 70;
       tl.fromTo('.film__stack', { rotateX: 0, rotateZ: 0, scale: 0.7 }, { rotateX: 62, rotateZ: -32, scale: 1, duration: 1.2, ease: 'power2.inOut' })
-        .to('.film__layer--0', { z: 170, duration: 1.4, ease: 'power2.inOut' }, 1)
-        .to('.film__layer--2', { z: -170, duration: 1.4, ease: 'power2.inOut' }, 1)
+        .to('.film__layer--0', { z: spread, duration: 1.4, ease: 'power2.inOut' }, 1)
+        .to('.film__layer--2', { z: -spread, duration: 1.4, ease: 'power2.inOut' }, 1)
         .fromTo('.film__label', { opacity: 0, x: 40 }, { opacity: 1, x: 0, stagger: 0.35, duration: 0.6 }, 1.6)
         .fromTo('.film__label i', { scaleX: 0 }, { scaleX: 1, stagger: 0.35, duration: 0.6 }, 1.6)
         .fromTo('.film__caption', { opacity: 0 }, { opacity: 1, duration: 0.6 }, 2.6)

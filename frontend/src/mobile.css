@@ -139,3 +139,52 @@ html.is-locked, html.is-locked body { overflow: hidden; }
 }
 @keyframes rotatePhone { 0%, 30% { transform: rotate(-90deg); } 60%, 100% { transform: rotate(0deg); } }
 @media (prefers-reduced-motion: reduce) { .rotate__phone { animation: none; } }
+
+/* ── Product view on phones ── */
+@media (max-width: 820px) {
+  .px__title h2 { font-size: clamp(1.75rem, 8.4vw, 2.15rem); overflow-wrap: break-word; hyphens: auto; }
+  .px__crumb { gap: 0.6rem; }
+  .px__top { gap: 0.8rem; }
+}
+
+/* ── Material: exploded film above, its three layers listed below ── */
+@media (max-width: 820px) {
+  .film { grid-template-rows: minmax(0, 1fr) auto; padding-block: 11vh 6vh; row-gap: 2vh; }
+  .film__scene { min-height: 0; overflow: visible; }
+  .film__stack { width: min(52vw, 46svh, 260px); }
+  .film__labels { gap: 0.9rem; position: relative; z-index: 1; }
+  .film__label h4 { font-size: 1.25rem; }
+  .film__label p, .film__label small { font-size: 0.82rem; }
+}
+
+/* ── Comparison tables on phones: labels pinned left, ELVARA pinned right,
+      only the other columns swipe in between ── */
+@media (max-width: 820px) {
+  .matrix__row { min-width: 560px; grid-template-columns: 9.5rem repeat(4, minmax(5.5rem, 1fr)); }
+  .matrix__row > span:first-child,
+  .landscape__table tbody th, .landscape__table thead th:first-child {
+    position: sticky; left: 0; z-index: 2; background: rgb(var(--bg-rgb)); padding-right: 0.6rem;
+  }
+  .matrix__row > .is-elvara, .landscape__table .is-elvara {
+    position: sticky; right: 0; z-index: 2;
+    background: linear-gradient(rgba(185, 162, 122, 0.14), rgba(185, 162, 122, 0.14)), rgb(var(--bg-rgb));
+    box-shadow: -12px 0 16px -12px rgba(0, 0, 0, 0.6);
+  }
+  .matrix__row > .is-elvara { align-self: stretch; display: grid; place-items: center; }
+  .matrix__hl { display: none; }
+  .matrix__row > span:first-child { font-size: 0.98rem; }
+}
+
+/* ── Material layer labels: the text column may shrink ── */
+@media (max-width: 820px) {
+  .film__label { grid-template-columns: 28px auto minmax(0, 1fr); }
+  .film__label > div { min-width: 0; }
+}
+
+/* Product view on phones: the description grows upward from a fixed line
+   above the hint and progress bar, so the three never overlap. */
+@media (max-width: 820px) {
+  .px__infos { bottom: 124px; }
+  .px__info { top: auto; bottom: 0; }
+  .px__hint i { display: none; }
+}

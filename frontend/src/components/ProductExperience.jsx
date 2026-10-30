@@ -153,6 +153,11 @@ export default function ProductExperience({ productId, origin, onClose, onNaviga
   useEffect(() => {
     const vid = live.current;
     vid.src = scrubSrc(product.video);
+    // Phones (mobile data, data saver) often ignore preload for a video that
+    // never plays; a silent play-then-pause makes them fetch it. Until frames
+    // arrive, the product still stands in as the poster.
+    vid.load();
+    vid.play()?.then(() => vid.pause()).catch(() => {});
     let seeking = false;
     let pending = null;
     vid.onseeked = () => {
@@ -171,6 +176,7 @@ export default function ProductExperience({ productId, origin, onClose, onNaviga
     };
     const ready = () => setLoaded(1);
     vid.addEventListener('canplay', ready);
+    vid.addEventListener('loadeddata', ready);
     let lastSeg = -1;
     let lastEnd = false;
     let lastKey = '';
@@ -213,6 +219,7 @@ export default function ProductExperience({ productId, origin, onClose, onNaviga
     return () => {
       gsap.ticker.remove(tick);
       vid.removeEventListener('canplay', ready);
+      vid.removeEventListener('loadeddata', ready);
     };
   }, [product]);
 
@@ -265,7 +272,7 @@ export default function ProductExperience({ productId, origin, onClose, onNaviga
 
   return (
     <div className="px" ref={root} style={style} role="dialog" aria-modal="true" aria-label={`${product.name} — interactive product view`}>
-      <video ref={live} className="px__film" muted playsInline preload="auto" disablePictureInPicture aria-hidden="true" />
+      <video ref={live} className="px__film" poster={product.img} muted playsInline preload="auto" disablePictureInPicture aria-hidden="true" />
       <div className="px__feather" aria-hidden="true" />
 
       <div className="px__scroller" ref={scroller} tabIndex={-1}>
@@ -288,7 +295,7 @@ export default function ProductExperience({ productId, origin, onClose, onNaviga
 
         <div className="px__title">
           <p className="eyebrow">{product.kind}{product.indicator && <span className="px__ind"><i />Freshness indicator</span>}</p>
-          <h2 className="display-md">{product.name}</h2>
+          <h2 className="display-md">{product.name.split('/').flatMap((part, i) => (i ? ['/', <wbr key={i} />, part] : [part]))}</h2>
           <p className="px__tags">{product.tags.map((x) => <span key={x}>{x}</span>)}</p>
         </div>
 
