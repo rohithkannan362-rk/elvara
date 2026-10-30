@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState } from 'react';
-import { gsap, ScrollTrigger, scrollToId } from '../lib/scroll';
+import { gsap, ScrollTrigger, scrollToId, getLenis } from '../lib/scroll';
 import { BRAND } from '../data/content';
 import { isOn, isAudible, onChange as onSoundChange, toggle as toggleSound } from '../lib/sound';
 
@@ -80,6 +80,7 @@ const GROUPS = [
 export function Chrome({ ready }) {
   const [active, setActive] = useState('problem');
   const [scrolled, setScrolled] = useState(false);
+  const [menu, setMenu] = useState(false);
   const bar = useRef();
   const rail = useRef();
 
@@ -135,7 +136,7 @@ export function Chrome({ ready }) {
   return (
     <>
       <span className="progress" aria-hidden="true"><i ref={bar} /></span>
-      <header className={`chrome ${scrolled ? 'is-scrolled' : ''}`}>
+      <header className={`chrome ${scrolled ? 'is-scrolled' : ''} ${menu ? 'is-menu' : ''}`}>
         <button className="brand" onClick={() => scrollToId('problem')} aria-label="ELVARA — back to start" data-cursor="hover">
           <span className="medallion medallion--sm"><img decoding="async" src={BRAND.logo} alt="" /></span>
           <span className="wordmark">ELVARA</span>
@@ -151,8 +152,13 @@ export function Chrome({ ready }) {
             <span className="nav__roll"><span>Contact</span><span aria-hidden="true">Contact</span></span>
             <i aria-hidden="true">→</i>
           </button>
+          <button className={`burger ${menu ? 'is-open' : ''}`} onClick={() => setMenu((m) => !m)} aria-expanded={menu} aria-controls="mnav" aria-label={menu ? 'Close menu' : 'Open menu'} data-cursor="hover">
+            <span className="burger__label">{menu ? 'Close' : 'Menu'}</span>
+            <span className="burger__icon" aria-hidden="true"><i /><i /></span>
+          </button>
         </div>
       </header>
+      <MobileMenu open={menu} active={active} onClose={() => setMenu(false)} />
       <nav className="index" aria-label="Chapters">
         <span className="index__rail"><i ref={rail} /></span>
         {CHAPTERS.map((c) => (
@@ -239,6 +245,90 @@ function NavBar({ active }) {
         </div>
       ))}
     </nav>
+  );
+}
+
+// Phones and tablets: the nav pill becomes a full-screen sheet. Each act opens
+// to its sections; choosing one closes the sheet and glides there.
+function MobileMenu({ open, active, onClose }) {
+  const root = useRef();
+  const current = GROUPS.find((g) => g.secs.some(([id]) => id === active))?.id;
+  const [expanded, setExpanded] = useState(null);
+
+  useEffect(() => {
+    const el = root.current;
+    const lenis = getLenis();
+    if (open) {
+      setExpanded(current || null);
+      lenis?.stop();
+      document.documentElement.classList.add('is-locked');
+      gsap.killTweensOf(el);
+      gsap.set(el, { visibility: 'visible' });
+      gsap.fromTo(el, { clipPath: 'inset(0 0 100% 0)' }, { clipPath: 'inset(0 0 0% 0)', duration: 0.8, ease: 'expo.inOut' });
+      gsap.fromTo(el.querySelectorAll('.mnav__act, .mnav__foot > *'), { y: 40, opacity: 0 }, { y: 0, opacity: 1, stagger: 0.05, duration: 0.9, ease: 'expo.out', delay: 0.25 });
+      const esc = (e) => e.key === 'Escape' && onClose();
+      addEventListener('keydown', esc);
+      return () => removeEventListener('keydown', esc);
+    }
+    lenis?.start();
+    document.documentElement.classList.remove('is-locked');
+    if (gsap.getProperty(el, 'visibility') === 'visible') {
+      gsap.to(el, { clipPath: 'inset(0 0 100% 0)', duration: 0.6, ease: 'expo.inOut', onComplete: () => gsap.set(el, { visibility: 'hidden' }) });
+    }
+  }, [open]);
+
+  // The sheet is never left open on a desktop-width window.
+  useEffect(() => {
+    const mq = matchMedia('(min-width: 1101px)');
+    const on = () => mq.matches && onClose();
+    mq.addEventListener('change', on);
+    return () => mq.removeEventListener('change', on);
+  }, []);
+
+  const go = (id) => {
+    onClose();
+    // Let the page unlock before gliding.
+    setTimeout(() => scrollToId(id), 60);
+  };
+
+  return (
+    <div id="mnav" className="mnav" ref={root} role="dialog" aria-modal="true" aria-label="Site menu" aria-hidden={!open} inert={open ? undefined : ''}>
+      <div className="mnav__inner">
+        <ol className="mnav__acts">
+          {GROUPS.map((g, i) => {
+            const isOpen = expanded === g.id;
+            return (
+              <li key={g.id} className={`mnav__act ${isOpen ? 'is-open' : ''} ${current === g.id ? 'is-current' : ''}`}>
+                <div className="mnav__row">
+                  <button className="mnav__title" onClick={() => go(g.id)}>
+                    <span className="tnum">{String(i + 1).padStart(2, '0')}</span>
+                    <b>{g.title}</b>
+                    <small>{g.kicker}</small>
+                  </button>
+                  <button className="mnav__toggle" onClick={() => setExpanded(isOpen ? null : g.id)} aria-expanded={isOpen} aria-label={`${isOpen ? 'Hide' : 'Show'} sections in ${g.title}`}>
+                    <i aria-hidden="true" />
+                  </button>
+                </div>
+                <div className="mnav__secs">
+                  <ul>
+                    {g.secs.map(([id, title]) => (
+                      <li key={id}>
+                        <button className={active === id ? 'is-active' : ''} onClick={() => go(id)}>{title}</button>
+                      </li>
+                    ))}
+                  </ul>
+                </div>
+              </li>
+            );
+          })}
+        </ol>
+        <div className="mnav__foot">
+          <button className="pill" onClick={() => go('enquire')}>Business enquiry <i aria-hidden="true">→</i></button>
+          <SoundToggle />
+          <a href={`mailto:${BRAND.email}`}>{BRAND.email}</a>
+        </div>
+      </div>
+    </div>
   );
 }
 

@@ -80,6 +80,11 @@ export default function App() {
         <Environment />
       </Safe>
       <div className="grain" aria-hidden="true" />
+      <div className="rotate" role="status">
+        <span className="rotate__phone" aria-hidden="true" />
+        <b>Turn your phone upright</b>
+        <span>ELVARA is told in portrait</span>
+      </div>
       {!loaderGone && <Loader onReveal={onReveal} onDone={onDone} />}
       <Cursor />
       <Chrome ready={ready} />

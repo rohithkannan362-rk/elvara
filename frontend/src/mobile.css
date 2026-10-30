@@ -1,0 +1,141 @@
+/* ═══════════════ Phones & tablets ═══════════════
+   The nav pill hides below 1101px; a Menu button opens this full-screen
+   sheet instead. Plus small-screen fixes for the header. */
+
+/* ── Menu button ──────────────────── */
+.burger { display: none; }
+@media (max-width: 1100px) {
+  .chrome .burger { display: inline-flex; }
+}
+
+/* ── Sheet ────────────────────────── */
+.mnav {
+  position: fixed; inset: 0; z-index: 39; visibility: hidden;
+  color: #f3ebd6; background:
+    radial-gradient(120% 70% at 85% 0%, rgba(185, 162, 122, 0.16), transparent 60%),
+    radial-gradient(90% 60% at 0% 100%, rgba(42, 92, 64, 0.5), transparent 65%),
+    #02110c;
+  overflow: hidden auto; overscroll-behavior: contain; -webkit-overflow-scrolling: touch;
+  --fg: #f3ebd6; --fg-rgb: 243, 235, 214; --muted: #9aa898; --line: rgba(243, 235, 214, 0.14);
+}
+.mnav__inner {
+  min-height: 100%; display: grid; align-content: space-between; gap: 2.4rem;
+  padding: calc(84px + env(safe-area-inset-top)) var(--gutter) calc(28px + env(safe-area-inset-bottom));
+}
+.mnav__acts { list-style: none; margin: 0; padding: 0; border-top: 1px solid var(--line); }
+.mnav__act { border-bottom: 1px solid var(--line); }
+.mnav__row { display: flex; align-items: stretch; }
+.mnav__title {
+  flex: 1; display: grid; grid-template-columns: 2.4rem 1fr; grid-template-areas: 'no t' 'no k';
+  align-items: baseline; column-gap: 0.4rem; row-gap: 0.3rem; padding: 1rem 0; text-align: left; color: inherit;
+  min-height: 56px;
+}
+.mnav__title .tnum { grid-area: no; font: 500 0.66rem/1 var(--sans); letter-spacing: 0.18em; color: #b9a27a; }
+.mnav__title b { grid-area: t; font: 300 clamp(1.9rem, 7.4vw, 2.8rem)/1.05 var(--serif); letter-spacing: -0.02em; }
+.mnav__title small { grid-area: k; font: 500 0.6rem/1.3 var(--sans); letter-spacing: 0.2em; text-transform: uppercase; color: var(--muted); }
+.mnav__act.is-current .mnav__title b { color: #e8d7ae; }
+.mnav__act.is-current .mnav__title .tnum::after {
+  content: ''; display: inline-block; width: 5px; height: 5px; margin-left: 0.45rem; vertical-align: middle;
+  border-radius: 50%; background: #e8d7ae; box-shadow: 0 0 8px rgba(232, 215, 174, 0.9);
+}
+.mnav__toggle { flex: none; width: 56px; display: grid; place-items: center; color: inherit; }
+.mnav__toggle i {
+  position: relative; width: 34px; height: 34px; border-radius: 50%; border: 1px solid rgba(243, 235, 214, 0.28);
+  transition: transform 0.5s var(--ease), background 0.4s;
+}
+.mnav__toggle i::before, .mnav__toggle i::after {
+  content: ''; position: absolute; left: 50%; top: 50%; width: 12px; height: 1.5px; margin: -0.75px 0 0 -6px; background: currentColor; border-radius: 1px;
+}
+.mnav__toggle i::after { transform: rotate(90deg); transition: transform 0.5s var(--ease); }
+.mnav__act.is-open .mnav__toggle i { background: rgba(243, 235, 214, 0.1); }
+.mnav__act.is-open .mnav__toggle i::after { transform: rotate(0deg); }
+/* Sections fold open with a grid-row transition — no height measuring. */
+.mnav__secs { display: grid; grid-template-rows: 0fr; transition: grid-template-rows 0.55s var(--ease); }
+.mnav__act.is-open .mnav__secs { grid-template-rows: 1fr; }
+.mnav__secs ul { overflow: hidden; list-style: none; margin: 0; padding: 0 0 0 2.8rem; }
+.mnav__secs li:last-child { padding-bottom: 1rem; }
+.mnav__secs button {
+  display: block; width: 100%; padding: 0.72rem 0; text-align: left; color: rgba(243, 235, 214, 0.78);
+  font: 400 1rem/1.3 var(--sans); min-height: 44px;
+}
+.mnav__secs button.is-active { color: #e8d7ae; }
+.mnav__secs button.is-active::before { content: '— '; color: #b9a27a; }
+.mnav__foot { display: flex; flex-wrap: wrap; align-items: center; gap: 1rem 1.4rem; }
+.mnav__foot .pill { background: #f3ebd6; color: #02110c; }
+.mnav__foot a { flex-basis: 100%; color: var(--muted); font-size: 0.86rem; text-decoration: none; word-break: break-all; }
+.mnav .sound__label { display: inline !important; }
+.mnav .sound { padding: 0.55rem 0.95rem 0.55rem 0.8rem !important; }
+
+/* Page behind the sheet does not scroll. */
+html.is-locked, html.is-locked body { overflow: hidden; }
+
+/* ── Header on small screens ──────── */
+@media (max-width: 1100px) {
+  .chrome .chrome__chapter { display: flex; }
+}
+@media (max-width: 720px) {
+  .chrome { padding-inline: 16px; }
+  .chrome .chrome__chapter { display: none; }
+  .chrome__right { gap: 0.6rem; }
+  /* Contact and Sound live in the menu sheet on phones. */
+  .chrome .nav-cta, .chrome .sound { display: none; }
+  .burger { padding: 0.32rem 0.32rem 0.32rem 0.9rem; }
+  .brand .wordmark { font-size: 0.86rem; }
+}
+@media (max-width: 360px) {
+  .burger__label { display: none; }
+  .burger { padding: 0.32rem; }
+}
+
+/* ── Enquiry form: columns may shrink below the inputs' built-in width ── */
+.enquire__form { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+.enquire__form > * { min-width: 0; }
+.field input, .field select, .field textarea { width: 100%; min-width: 0; box-sizing: border-box; }
+@media (max-width: 820px) {
+  .enquire__form { grid-template-columns: minmax(0, 1fr); }
+}
+
+/* ── Touch: every control at least a fingertip tall ── */
+@media (pointer: coarse), (max-width: 820px) {
+  .fin__tabs button, .chips button { min-height: 44px; }
+  /* The freshness slider keeps its thin track but gets a full-height touch zone. */
+  .living__slider input[type='range'] { height: 44px; background-clip: content-box; padding-block: 19px; box-sizing: border-box; }
+  .enquire a[href^='mailto'] { display: inline-block; padding-block: 0.6rem; }
+}
+
+/* ── Phones: no label smaller than ~11px ── */
+@media (max-width: 720px) {
+  main small, main th, main dt, .eyebrow, .stat__src, .indicator__tick, .porter__lvl,
+  .xchart__legend, .funds__row small, .market__row .eyebrow { font-size: max(0.7rem, 11px); }
+  .soil__stages { font-size: 0.6rem; letter-spacing: 0.08em; }
+  .soil__clock span { font-size: 0.7rem; }
+}
+
+/* ── India facts: columns may shrink; on narrow phones they stack ── */
+@media (max-width: 820px) {
+  .india { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+}
+@media (max-width: 440px) {
+  .india { grid-template-columns: minmax(0, 1fr); }
+}
+
+/* ── Phones held sideways ──
+   The pinned story scenes are composed for portrait phones and desktops; on a
+   ~375px-tall landscape phone they cannot fit, so ask for the phone upright. */
+.rotate { display: none; }
+@media (orientation: landscape) and (max-height: 500px) and (pointer: coarse) {
+  .rotate {
+    position: fixed; inset: 0; z-index: 200; display: grid; place-content: center; justify-items: center; gap: 1.2rem;
+    padding: 24px; text-align: center; color: #f3ebd6;
+    background: radial-gradient(90% 80% at 50% 0%, rgba(185, 162, 122, 0.18), transparent 60%), #02110c;
+  }
+  .rotate__phone {
+    width: 34px; height: 58px; border: 2px solid #e8d7ae; border-radius: 8px; position: relative;
+    animation: rotatePhone 2.4s var(--ease) infinite;
+  }
+  .rotate__phone::after { content: ''; position: absolute; left: 50%; bottom: 5px; width: 8px; height: 2px; margin-left: -4px; border-radius: 1px; background: #e8d7ae; }
+  .rotate b { font: 300 1.7rem/1.15 var(--serif); }
+  .rotate span { font: 500 0.62rem/1.4 var(--sans); letter-spacing: 0.2em; text-transform: uppercase; color: #9aa898; }
+}
+@keyframes rotatePhone { 0%, 30% { transform: rotate(-90deg); } 60%, 100% { transform: rotate(0deg); } }
+@media (prefers-reduced-motion: reduce) { .rotate__phone { animation: none; } }

@@ -6,6 +6,7 @@ import './extras.css';
 import './fx.css';
 import './overview.css';
 import './visuals.css';
+import './mobile.css';
 import App from './App';
 
 createRoot(document.getElementById('root')).render(<App />);
