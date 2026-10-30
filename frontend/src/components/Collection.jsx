@@ -38,7 +38,7 @@ function ProductObject({ p, i, onOpen }) {
     >
       <span className="object__body">
         <span className="object__shadow" aria-hidden="true" />
-        <img decoding="async" src={p.img} alt={p.name} draggable="false" decoding="async" />
+        <img loading="lazy" decoding="async" src={p.img} alt={p.name} draggable="false" decoding="async" />
         <span className="object__sheen" aria-hidden="true" />
       </span>
       <span className="object__meta">

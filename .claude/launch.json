@@ -1,6 +1,7 @@
 {
   "version": "0.0.1",
   "configurations": [
-    { "name": "elvara", "runtimeExecutable": "npm", "runtimeArgs": ["--prefix", "frontend", "run", "dev"], "port": 5173 }
+    { "name": "elvara", "runtimeExecutable": "npm", "runtimeArgs": ["--prefix", "frontend", "run", "dev"], "port": 5173 },
+    { "name": "elvara-prod", "runtimeExecutable": "npm", "runtimeArgs": ["--prefix", "frontend", "run", "preview", "--", "--port", "4173", "--strictPort"], "port": 4173 }
   ]
 }

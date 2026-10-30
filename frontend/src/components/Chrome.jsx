@@ -138,7 +138,7 @@ export function Chrome({ ready }) {
       <span className="progress" aria-hidden="true"><i ref={bar} /></span>
       <header className={`chrome ${scrolled ? 'is-scrolled' : ''} ${menu ? 'is-menu' : ''}`}>
         <button className="brand" onClick={() => scrollToId('problem')} aria-label="ELVARA — back to start" data-cursor="hover">
-          <span className="medallion medallion--sm"><img decoding="async" src={BRAND.logo} alt="" /></span>
+          <span className="medallion medallion--sm"><img loading="lazy" decoding="async" src={BRAND.logo} alt="" /></span>
           <span className="wordmark">ELVARA</span>
         </button>
         <NavBar active={active} />
@@ -226,7 +226,7 @@ function NavBar({ active }) {
           </a>
           <div className="nav__panel" role="group" aria-label={`In ${g.title}`}>
             <div className="nav__intro">
-              <img decoding="async" src={g.img} alt="" />
+              <img loading="lazy" decoding="async" src={g.img} alt="" />
               <p className="eyebrow">{g.kicker}</p>
               <p>{g.line}</p>
               <a className="nav__all" href={`#${g.id}`} onClick={to(g.id)} data-cursor="hover">Go to {g.title} <span aria-hidden="true">→</span></a>

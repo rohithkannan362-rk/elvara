@@ -126,57 +126,7 @@ main { position: relative; z-index: 1; }
 .medallion--sm { width: 34px; box-shadow: 0 0 0 1px rgba(185, 162, 122, 0.4); }
 .medallion--xl { width: clamp(150px, 22vmin, 260px); }
 
-/* ── Loader ───────────────────────────────── */
-.loader {
-  position: fixed; inset: 0; z-index: 100; overflow: hidden;
-  color: var(--cream);
-  display: grid; place-items: center;
-}
-/* Leaf entrance: the entrance film through the canopy, shaded for the mark. */
-.loader { background: #020a07; }
-.loader__film {
-  position: absolute; inset: 0; z-index: 0; width: 100%; height: 100%; object-fit: cover;
-  will-change: transform; animation: filmIn 1.2s ease-out both;
-}
-@keyframes filmIn { from { opacity: 0; } to { opacity: 1; } }
-.loader__shade {
-  position: absolute; inset: 0; z-index: 1; pointer-events: none;
-  background:
-    radial-gradient(60% 55% at 50% 50%, rgba(2, 17, 12, 0.5) 0%, rgba(2, 17, 12, 0.18) 60%, transparent 100%),
-    linear-gradient(180deg, rgba(2, 17, 12, 0.45) 0%, transparent 28%, transparent 70%, rgba(2, 17, 12, 0.6) 100%);
-}
-.loader__flash { position: absolute; inset: 0; z-index: 3; pointer-events: none; opacity: 0; background: radial-gradient(circle at 62% 30%, #fff8e8 0%, #f3ebd6 40%, rgba(243, 235, 214, 0.92) 100%); }
-.loader__skip {
-  position: absolute; z-index: 4; top: clamp(18px, 3.5vh, 32px); right: var(--gutter);
-  padding: 0.7rem 1.1rem; border-radius: 999px; cursor: pointer;
-  font: 500 0.68rem/1 var(--sans); letter-spacing: 0.22em; text-transform: uppercase;
-  color: rgba(243, 235, 214, 0.85); background: rgba(2, 17, 12, 0.35);
-  border: 1px solid rgba(243, 235, 214, 0.28); backdrop-filter: blur(6px);
-  transition: background 0.3s, border-color 0.3s;
-}
-@media (max-width: 520px) {
-  .loader__motto { font-size: 0.68rem; letter-spacing: 0.2em; text-align: center; padding: 0 var(--gutter); }
-}
-.loader__skip:hover { background: rgba(2, 17, 12, 0.6); border-color: rgba(243, 235, 214, 0.6); }
-.loader__center { text-shadow: 0 2px 30px rgba(2, 10, 7, 0.75); }
-.loader__center::before { content: ""; position: absolute; inset: -18% -30%; z-index: -1; border-radius: 50%; background: radial-gradient(closest-side, rgba(2, 10, 7, 0.62), rgba(2, 10, 7, 0.3) 55%, transparent); filter: blur(10px); }
-.loader__motto { color: rgba(243, 235, 214, 0.86) !important; }
-.loader__center .medallion { box-shadow: 0 0 0 1px rgba(232, 215, 174, 0.6), 0 30px 80px -20px rgba(0, 0, 0, 0.8), 0 0 60px rgba(232, 215, 174, 0.25); }
-.loader__center { position: relative; z-index: 2; display: grid; justify-items: center; gap: 2.2rem; }
-.loader__mark { width: clamp(110px, 16vmin, 170px); }
-/* Compositor-driven, so it keeps moving while the page builds behind the loader. */
-.loader__mark { animation: markIn 1.4s cubic-bezier(0.16, 1, 0.3, 1) both, markBreathe 3.2s ease-in-out 1.4s infinite; }
-@keyframes markBreathe { 50% { transform: scale(1.035); } }
-@keyframes markIn { from { opacity: 0; transform: scale(0.78); } to { opacity: 1; transform: scale(1); } }
-.loader__word { font-size: clamp(2.4rem, 6vw, 4.6rem); margin: 0; letter-spacing: 0.32em; padding-left: 0.32em; }
-.loader__motto { margin: -0.6rem 0 0; font: 500 0.8rem/1 var(--sans); letter-spacing: 0.32em; text-transform: uppercase; color: rgba(243, 235, 214, 0.62); }
-.loader__meta {
-  position: absolute; z-index: 2; left: var(--gutter); right: var(--gutter); bottom: clamp(24px, 5vh, 48px);
-  display: grid; grid-template-columns: auto 1fr auto; gap: 1.5rem; align-items: center;
-  font: 500 0.7rem/1 var(--sans); letter-spacing: 0.22em; text-transform: uppercase; color: rgba(243, 235, 214, 0.55);
-}
-.loader__bar { height: 1px; background: rgba(243, 235, 214, 0.12); overflow: hidden; }
-.loader__bar i { display: block; height: 100%; background: var(--champagne); transform-origin: left; transition: transform 0.2s linear; }
+/* ── Loader: styled inline in index.html so it paints before any script ── */
 
 /* ── Chrome ───────────────────────────────── */
 .chrome {

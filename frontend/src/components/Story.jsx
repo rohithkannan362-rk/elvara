@@ -14,6 +14,10 @@ export function Problem({ ready }) {
     const v = film.current;
     // React doesn't always reflect `muted` to the DOM; autoplay policies require it.
     if (v) v.muted = true;
+    // The film downloads in full once the entrance film is ready (see Loader).
+    const warm = () => v && (v.preload = 'auto');
+    if (window.__elvaraWarm) warm();
+    else addEventListener('elvara:warm', warm, { once: true });
     const ctx = gsap.context(() => {
       // Built paused during the entrance; plays the moment the visitor arrives —
       // and the film starts from its first frame then, so the opening isn't missed.
@@ -82,7 +86,7 @@ export function Problem({ ready }) {
       <div className="problem__stage">
         <div className="problem__filmwrap">
           <video
-            ref={film} className="problem__film" src={heroVideoSrc()} muted loop playsInline preload="auto"
+            ref={film} className="problem__film" src={heroVideoSrc()} muted loop playsInline preload={window.__elvaraWarm ? 'auto' : 'metadata'}
             aria-label="Problem statement film: plastic packaging waste"
             onLoadedMetadata={(e) => {
               const s = Math.round(e.currentTarget.duration);
@@ -411,7 +415,7 @@ export function Solution({ ready }) {
         <span className="solution__line" aria-hidden="true" />
         <p className="solution__kicker eyebrow"><Chars text="Our proposed solution" /></p>
         <div className="solution__halo" aria-hidden="true" />
-        <div className="solution__medallion medallion medallion--xl"><img decoding="async" src={BRAND.logo} alt="ELVARA logo" /></div>
+        <div className="solution__medallion medallion medallion--xl"><img loading="lazy" decoding="async" src={BRAND.logo} alt="ELVARA logo" /></div>
         <h2 className="solution__word wordmark">ELVARA</h2>
         <div className="solution__after">
           <p className="solution__claim display-sm"><Words text="One film. Two jobs." /></p>
@@ -592,7 +596,7 @@ export function Material({ ready }) {
           <div className="indicator__stage">
             <span className="indicator__halo" aria-hidden="true" />
             <div className="indicator__pack">
-              <img decoding="async" src={FRESHPACK.img} alt="ELVARA freshness-indicator pack with salmon" />
+              <img loading="lazy" decoding="async" src={FRESHPACK.img} alt="ELVARA freshness-indicator pack with salmon" />
               <span className="indicator__sheen" aria-hidden="true" />
             </div>
             <div className="indicator__lens" aria-hidden="true">

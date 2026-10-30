@@ -51,7 +51,7 @@ export function Applications({ ready, onOpen }) {
         <div className="apps__float" ref={float} aria-hidden="true">
           <div className="apps__plate">
             {ALL_PRODUCTS.map((x) => (
-              <img key={x.id} src={x.img} decoding="async" alt="" className={x.id === p.id ? 'is-on' : ''} />
+              <img key={x.id} src={x.img} loading="lazy" decoding="async" alt="" className={x.id === p.id ? 'is-on' : ''} />
             ))}
           </div>
           <p className="apps__caption"><span>{p.category.name}</span> {p.name}</p>
@@ -155,7 +155,7 @@ export function Founders({ ready }) {
               <span className="founder__border" aria-hidden="true" />
               <div className="founder__photo">
                 <div className="founder__zoom" style={{ transform: `scale(${f.zoom || 1})`, transformOrigin: f.origin || '50% 30%' }}>
-                  <img decoding="async" src={f.img} alt={`${f.name}, ${f.role} of ELVARA`} style={{ objectPosition: f.focus }} />
+                  <img loading="lazy" decoding="async" src={f.img} alt={`${f.name}, ${f.role} of ELVARA`} style={{ objectPosition: f.focus }} />
                 </div>
                 <span className="founder__shade" aria-hidden="true" />
               </div>
@@ -242,7 +242,7 @@ export function Enquire({ ready, interest }) {
       </div>
       <footer className="footer wrap">
         <div className="footer__brand">
-          <span className="medallion medallion--sm"><img decoding="async" src={BRAND.logo} alt="" /></span>
+          <span className="medallion medallion--sm"><img loading="lazy" decoding="async" src={BRAND.logo} alt="" /></span>
           <span className="wordmark">ELVARA</span>
         </div>
         <a href={`mailto:${BRAND.email}`} data-cursor="hover">{BRAND.email}</a>

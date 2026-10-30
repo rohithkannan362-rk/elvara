@@ -166,7 +166,7 @@ export default function Carousel3D({ ready, onOpen }) {
               data-cursor={i === front ? 'Open' : 'hover'}
             >
               <span className="ring3d__card">
-                <img decoding="async" src={x.img} alt="" draggable="false" decoding="async" />
+                <img loading="lazy" decoding="async" src={x.img} alt="" draggable="false" decoding="async" />
                 <span className="ring3d__sheen" aria-hidden="true" />
               </span>
             </button>
