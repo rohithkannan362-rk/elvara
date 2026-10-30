@@ -2,7 +2,6 @@ import { useEffect, useRef, useState } from 'react';
 import { gsap } from '../lib/scroll';
 import { BRAND, CATEGORIES, heroVideoSrc } from '../data/content';
 import { Chars } from '../lib/Split';
-import { autoStart as autoStartSound } from '../lib/sound';
 
 // Entering through the leaves: the entrance film pushes through a dewy canopy
 // into a sunlit clearing. The ELVARA mark rests over the leaves, then steps aside
@@ -43,14 +42,9 @@ export default function Loader({ onReveal, onDone }) {
     hero.preload = 'auto';
     hero.src = heroVideoSrc();
 
-    // Build every chapter right away, behind the film; then start the music and
-    // rest the page's silk background so only the film is drawing.
-    requestAnimationFrame(() =>
-      requestAnimationFrame(() => {
-        onReveal();
-        autoStartSound();
-      })
-    );
+    // Build every chapter right away, behind the film, and rest the page's silk
+    // background so only the film is drawing. (Music stays off until asked for.)
+    requestAnimationFrame(() => requestAnimationFrame(() => onReveal()));
     later(() => dispatchEvent(new CustomEvent('elvara:room', { detail: true })), 900);
 
     const ctx = gsap.context(() => {

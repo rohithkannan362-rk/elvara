@@ -3,15 +3,14 @@
 //   · a warm, chorused pad moving through Dmaj9 → Bm11 → Gmaj7♯11 → A6/9
 //   · a glassy FM "celesta" arpeggio wandering over the chord, ping-pong echoed
 //   · a soft sub-bass, a high shimmer and a breath of filtered air
-// All of it sits in a long hall reverb. The score is on by default and
-// remembers a visitor's choice. It is only ever audible while the page is
+// All of it sits in a long hall reverb. The score starts off: it plays only
+// once a visitor presses Sound. It is only ever audible while the page is
 // actually being looked at: a hidden tab or minimised window stays silent,
 // and the music starts (or resumes) the moment the page is in view. Where the
 // browser holds audio until a first gesture, that first click or key only
 // unlocks it — it never counts as switching the sound off.
 
 const TRACK = '/media/audio/ambient.mp3';
-const PREF = 'elvara-sound';
 const VOLUME = 0.5;
 const BPM = 72;
 const EIGHTH = 60 / BPM / 2; // seconds
@@ -36,12 +35,6 @@ export const isOn = () => on;
 export const isAudible = () => audible;
 const pageHidden = () => typeof document !== 'undefined' && document.hidden;
 export const onChange = (f) => (listeners.add(f), () => listeners.delete(f));
-
-function writePref(v) {
-  try {
-    localStorage.setItem(PREF, v ? 'on' : 'off');
-  } catch {}
-}
 
 function hall(seconds = 6.5) {
   const len = Math.floor(ctx.sampleRate * seconds);
@@ -276,7 +269,6 @@ async function hasTrack() {
 export async function start() {
   if (on) return;
   on = true;
-  writePref(true);
   emit();
   if (!ctx) {
     build();
@@ -327,7 +319,6 @@ export function stop() {
   if (!on) return;
   on = false;
   audible = false;
-  writePref(false);
   emit();
   if (!ctx) return;
   const t = ctx.currentTime;
@@ -379,16 +370,6 @@ function armUnlock() {
     wake();
   };
   events.forEach((e) => addEventListener(e, go, { capture: true, passive: true }));
-}
-
-// The score is on by default; a visitor who switched it off stays off.
-export function autoStart() {
-  let pref = null;
-  try {
-    pref = localStorage.getItem(PREF);
-  } catch {}
-  if (pref === 'off') return;
-  start();
 }
 
 if (typeof document !== 'undefined') {
